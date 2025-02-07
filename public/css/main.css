@@ -111,6 +111,10 @@ h1 {
   display: none;
 }
 
+#event-list {
+  position: relative;
+}
+
 .event-card {
   background-color: #fff;
   border-left: 3px solid #e0e0e0;
@@ -119,9 +123,6 @@ h1 {
   font-size: 13px;
 }
 
-.event-card.highlighted {
-  border-left-color: red!important;
-}
 .event-card.command {
   border-left-color: #1976d2;
 }
@@ -147,6 +148,8 @@ h1 {
   background-color: #e3f2fd;
   color: #1976d2;
   font-size: 12px;
+
+  a { cursor: pointer; }
 }
 
 .event-type.error {
@@ -190,4 +193,24 @@ h1 {
   font-size: 12px;
   white-space: pre;
   overflow-x: auto;
+}
+
+/* Arrow indicator */
+.event-card::before {
+  content: "→";
+  position: absolute;
+  left: -2rem;
+  opacity: 0;
+  transition: transform 0.2s, opacity 0.2s;
+  transform: translateX(1rem);
+}
+
+/* Show arrow on selected item */
+.event-card.highlighted {
+  background-color: #f3f4f6;
+}
+
+.event-card.highlighted::before {
+  opacity: 1;
+  transform: translateX(0);
 }

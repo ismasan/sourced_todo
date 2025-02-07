@@ -1,7 +1,8 @@
 module Components
   class TodoItem < Phlex::HTML
-    def initialize(todo)
+    def initialize(todo, interactive: true)
       @todo = todo
+      @interactive = interactive
     end
 
     def view_template
@@ -13,7 +14,7 @@ module Components
         id: dom_id
       ) do
         Components::Action(Todos::ListActor[:toggle_item], payload: { id: todo.id }, on: :change) do |form|
-          form.check_box('done', value: todo.done, checked: todo.done, class: 'todo-checkbox')
+          form.check_box('done', value: todo.done, checked: todo.done, disabled: !@interactive, class: 'todo-checkbox')
         end
         span(class: 'todo-text') { todo.text }
       end

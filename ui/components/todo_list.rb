@@ -1,19 +1,24 @@
 module Components
   class TodoList < Phlex::HTML
-    def initialize(todo_list:)
+    def initialize(todo_list:, interactive: true)
       @todo_list = todo_list
+      @interactive = interactive
     end
 
     def view_template
       div id: 'todo-list' do
-        Components::Action(Todos::ListActor[:add_item], attrs: { class: 'todo-form' }) do |form|
-          form.text_field(
-            'text',
-            class: 'todo-input',
-            placeholder: 'Add a new todo...',
-            required: true
-          )
-          button(type: 'submit', class: 'todo-button') { 'Add' }
+        if @interactive
+          Components::Action(Todos::ListActor[:add_item], attrs: { class: 'todo-form' }) do |form|
+            form.text_field(
+              'text',
+              class: 'todo-input',
+              placeholder: 'Add a new todo...',
+              required: true
+            )
+            button(type: 'submit', class: 'todo-button') { 'Add' }
+          end
+        else
+          p { a(href: url('/')) { 'Back to list' } }
         end
 
         div(class: 'filters') do
@@ -27,7 +32,7 @@ module Components
 
         ul(class: 'todo-list') do
           @todo_list.items.each do |item|
-            Components::TodoItem(item)
+            Components::TodoItem(item, interactive: @interactive)
           end
         end
       end

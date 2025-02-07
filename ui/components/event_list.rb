@@ -1,8 +1,9 @@
 module Components
   class EventList < Phlex::HTML
-    def initialize(events:, href_prefix: 'events', reverse: true)
+    def initialize(events:, seq: nil, href_prefix: 'todo-lists', reverse: true)
       @events = events
       @events = @events.reverse if reverse
+      @seq = seq
       @href_prefix = href_prefix
     end
 
@@ -18,7 +19,11 @@ module Components
         end
         div class: 'list' do
           @events.each do |event|
-            MessageRow(event, href: url("/#{@href_prefix}/#{event.stream_id}"))
+            MessageRow(
+              event,
+              highlighted: (event.seq == @seq),
+              href: url("/#{@href_prefix}/#{event.stream_id}/#{event.seq}")
+            )
           end
         end
       end

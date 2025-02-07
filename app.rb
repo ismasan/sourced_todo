@@ -36,8 +36,38 @@ class App < Sinatra::Base
 
   get '/?' do
     todo_list = Todos::ListActor.load(todo_list_id)
-    events = todo_list.events
-    phlex Pages::TodoListPage.new(todo_list: todo_list.state, events:)
+    phlex Pages::TodoListPage.new(
+      todo_list: todo_list.state, 
+      events: todo_list.events,
+      layout: true
+    )
+  end
+
+  get '/todo-lists/:id/:upto?' do
+    interactive = false
+    upto = Types::Lax::Integer.parse(params[:upto])
+    todo_list = Todos::ListActor.load(params[:id], upto:)
+    if datastar.sse?
+      datastar.stream do |sse|
+        sse.execute_script <<-JS
+          history.pushState({}, '', '/todo-lists/#{todo_list.id}/#{upto}')
+        JS
+        sse.merge_fragments Pages::TodoListPage.new(
+          todo_list: todo_list.state,
+          events: todo_list.history,
+          seq: upto,
+          interactive:
+        )
+      end
+    else
+      phlex Pages::TodoListPage.new(
+        todo_list: todo_list.state, 
+        events: todo_list.history,
+        seq: upto,
+        interactive:,
+        layout: true
+      )
+    end
   end
 
   post '/commands/?' do
@@ -47,7 +77,10 @@ class App < Sinatra::Base
     actor, events = Sourced::Router.handle_command(cmd)
     datastar.stream do |sse|
       sse.merge_fragments Components::TodoList.new(todo_list: actor.state)
-      sse.merge_fragments Components::EventList.new(events: actor.events)
+      sse.merge_fragments(Components::EventList.new(
+        events: actor.events,
+        href_prefix: 'todo-lists'
+      ))
     end
     # halt 202
   end

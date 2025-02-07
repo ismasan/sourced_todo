@@ -13,6 +13,11 @@ module Todos
       List.new(id:, items: [])
     end
 
+    # All events, not up to
+    def history
+      events(upto: nil)
+    end
+
     command :add_item, text: Types::String.present do |list, cmd|
       event :item_added, id: SecureRandom.uuid, text: cmd.payload.text
     end
@@ -23,7 +28,6 @@ module Todos
 
     command :toggle_item, id: Types::String.present do |list, cmd|
       item = list.items.find { |i| i.id == cmd.payload.id }
-      p list.items.map(&:id).inspect
       raise "Item not found with '#{cmd.payload.id}'" unless item
       event :item_toggled, id: item.id
     end

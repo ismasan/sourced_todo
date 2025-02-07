@@ -2,7 +2,7 @@ module Components
   class MessageRow < Phlex::HTML
     def initialize(event, href: nil, highlighted: false)
       @event = event
-      @href = "#{href}?upto=#{event.seq}"
+      @href = href
       @is_command = event.is_a?(Sourced::Command)
       @highlighted = highlighted
       @classes = [
@@ -18,7 +18,11 @@ module Components
           span(class: 'event-sequence') { event.seq }
           producer_for(event)
           span(class: 'event-type') do
-            strong { event.type }
+            if @href
+              a(data: { 'on-click' => %(@get('#{@href}')) }) { event.type }
+            else
+              strong { event.type }
+            end
           end
           span(class: 'event-timestamp') { event.created_at.to_s }
           # if @target
