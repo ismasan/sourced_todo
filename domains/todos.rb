@@ -36,5 +36,16 @@ module Todos
       item = list.items.find { |i| i.id == evt.payload.id }
       item.done = !item.done
     end
+
+    command :update_item_text, id: Types::String.present, text: Types::String.present do |list, cmd|
+      item = list.items.find { |i| i.id == cmd.payload.id }
+      raise "Item not found with '#{cmd.payload.id}'" unless item
+      event :item_text_updated, cmd.payload
+    end
+
+    event :item_text_updated, id: String, text: String do |list, evt|
+      item = list.items.find { |i| i.id == evt.payload.id }
+      item.text = evt.payload.text
+    end
   end
 end
