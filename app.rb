@@ -35,17 +35,20 @@ class App < Sinatra::Base
   end
 
   get '/?' do
-    todo_list = Todos::ListActor.load(todo_list_id).state
-    phlex Pages::TodoListPage.new(todo_list:)
+    todo_list = Todos::ListActor.load(todo_list_id)
+    events = todo_list.events
+    phlex Pages::TodoListPage.new(todo_list: todo_list.state, events:)
   end
 
   post '/commands/?' do
-    p params[:command].inspect
     cmd = command_context.build(params[:command].to_h)
     raise cmd.errors.inspect unless cmd.valid?
 
     actor, events = Sourced::Router.handle_command(cmd)
-    datastar.merge_fragments Components::TodoList.new(todo_list: actor.state)
+    datastar.stream do |sse|
+      sse.merge_fragments Components::TodoList.new(todo_list: actor.state)
+      sse.merge_fragments Components::EventList.new(events: actor.events)
+    end
     # halt 202
   end
 
