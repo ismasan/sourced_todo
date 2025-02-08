@@ -7,6 +7,7 @@ module Components
       @highlighted = highlighted
       @classes = [
         'event-card',
+        'fade-in',
         (@is_command ? 'command' : 'event'),
         ('highlighted' if @highlighted)
       ]
