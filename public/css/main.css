@@ -105,6 +105,10 @@ h1 {
   color: #6b7280;
 }
 
+.todo-text-action input {
+  padding: 0.5rem;
+  margin-right: 0.5rem;
+}
 /* Filter functionality */
 #filter-done:checked ~ .todo-list .todo-item:has(.todo-checkbox:not(:checked)),
 #filter-open:checked ~ .todo-list .todo-item:has(.todo-checkbox:checked) {

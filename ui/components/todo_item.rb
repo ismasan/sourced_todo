@@ -22,7 +22,7 @@ module Components
 
         edit_field_id = dom_id('edit')
 
-        div(data: { show: "$#{edit}" }) do
+        div(class: 'todo-text-action', data: { show: "$#{edit}" }) do
           Components::Action(Todos::ListActor[:update_item_text], payload: { id: todo.id }) do |form|
             form.text_field('text', value: todo.text, id: edit_field_id, disabled: !@interactive)
             button(type: 'button', data: { 'on-click' => %($#{edit} = false) }) { 'cancel' }
