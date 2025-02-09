@@ -6,7 +6,11 @@ module Todos
     end
   end
 
-  List = Struct.new(:id, :items, keyword_init: true)
+  List = Struct.new(:id, :items, keyword_init: true) do
+    def find_item(id)
+      items.find { |i| i.id == id }
+    end
+  end
 
   class ListActor < Sourced::Actor
     state do |id|
@@ -29,22 +33,31 @@ module Todos
     command :toggle_item, id: Types::String.present do |list, cmd|
       item = list.items.find { |i| i.id == cmd.payload.id }
       raise "Item not found with '#{cmd.payload.id}'" unless item
-      event :item_toggled, id: item.id
+      if item.done
+        event :item_undone, id: item.id
+      else
+        event :item_done, id: item.id
+      end
     end
 
-    event :item_toggled, id: String do |list, evt|
-      item = list.items.find { |i| i.id == evt.payload.id }
-      item.done = !item.done
+    event :item_done, id: String do |list, evt|
+      item = list.find_item(evt.payload.id)
+      item.done = true
+    end
+
+    event :item_undone, id: String do |list, evt|
+      item = list.find_item(evt.payload.id)
+      item.done = false
     end
 
     command :update_item_text, id: Types::String.present, text: Types::String.present do |list, cmd|
-      item = list.items.find { |i| i.id == cmd.payload.id }
+      item = list.find_item(cmd.payload.id)
       raise "Item not found with '#{cmd.payload.id}'" unless item
       event :item_text_updated, cmd.payload
     end
 
     event :item_text_updated, id: String, text: String do |list, evt|
-      item = list.items.find { |i| i.id == evt.payload.id }
+      item = list.find_item(evt.payload.id)
       item.text = evt.payload.text
     end
   end
