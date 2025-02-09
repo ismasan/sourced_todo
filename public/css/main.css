@@ -226,5 +226,5 @@ h1 {
 
 @keyframes fadeIn {
   from { opacity: 0; max-height: 0; }
-  to { opacity: 1; max-height: 100px; }
+  to { opacity: 1; max-height: 500px; }
 }
