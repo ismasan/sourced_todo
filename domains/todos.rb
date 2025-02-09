@@ -60,5 +60,15 @@ module Todos
       item = list.find_item(evt.payload.id)
       item.text = evt.payload.text
     end
+
+    command :remove_item, id: Types::String.present do |list, cmd|
+      item = list.find_item(cmd.payload.id)
+      raise "Item not found with '#{cmd.payload.id}'" unless item
+      event :item_removed, id: item.id
+    end
+
+    event :item_removed, id: String do |list, evt|
+      list.items.reject! { |i| i.id == evt.payload.id }
+    end
   end
 end

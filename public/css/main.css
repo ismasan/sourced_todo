@@ -135,15 +135,33 @@ h1 {
   height: 1.2rem;
 }
 
+.todo-text {
+  flex: 1;
+}
+
+.todo-delete {
+  display: none;
+  margin-top: 0;
+  button {
+    color: red;
+  }
+}
+.todo-item:hover .todo-delete {
+  display: inline-block;
+}
+
 .todo-item__done .todo-text {
   text-decoration: line-through;
   color: #6b7280;
   color: green;
 }
 
-.todo-text-action input {
-  padding: 0.5rem;
-  margin-right: 0.5rem;
+.todo-text-action {
+  flex: 1;
+  input {
+    padding: 0.5rem;
+    margin-right: 0.5rem;
+  }
 }
 /* Filter functionality */
 #filter-done:checked ~ .todo-list .todo-item:has(.todo-checkbox:not(:checked)),
@@ -156,6 +174,20 @@ h1 {
     height: calc(100vh - 116px);
     overflow-y: auto;
     padding-right: 1em;
+  }
+
+  .history-tools {
+    display: flex;
+    margin-bottom: 1rem;
+
+    .switches { flex: 1; }
+  }
+
+  .pagination {
+    small {
+      display: inline-block;
+      padding: 0 1rem;
+    }
   }
 }
 

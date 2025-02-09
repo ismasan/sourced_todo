@@ -25,17 +25,21 @@ module Components
         div(class: 'todo-text-action', data: { show: "$#{edit}" }) do
           Components::Action(Todos::ListActor[:update_item_text], payload: { id: todo.id }) do |form|
             form.text_field('text', value: todo.text, id: edit_field_id, disabled: !@interactive)
-            button(type: 'button', data: { 'on-click' => %($#{edit} = false) }) { 'cancel' }
           end
         end
         click = [%($#{edit} = true)]
         click << %(document.getElementById("#{edit_field_id}").focus())
         click = click.join(';')
-        data = @interactive ? { show: "!$#{edit}", 'on-click' => click } : {}
+        outside = %($#{edit} = false)
+        data = @interactive ? { show: "!$#{edit}", 'on-click' => click, 'on-click__outside' => outside } : {}
 
-        span(class: 'todo-text', data:) do
+        div(class: 'todo-text', data:) do
           todo.text
         end
+
+        Components::Action(Todos::ListActor[:remove_item], attrs: { class: 'todo-delete' }, payload: { id: todo.id }) do |form|
+          button { '✖' }
+        end if @interactive
       end
     end
 

@@ -12,22 +12,28 @@ module Components
     def view_template
       div id: 'event-list' do
         div class: 'header' do
-          h2 { "Current version: #{@seq}" }
+          h2 { 'History' }
           if @events.any?
-            p(data: { signals: '{"showPayloads": false}' }) do
-              button(class: 'toggle-payloads', data: { on: { click: '$showPayloads = !$showPayloads' } }) do
-                span(data: { text: '$showPayloads ? "Hide Payloads" : "Show Payloads"' })
-              end
+            div(class: 'history-tools', data: { signals: '{"showPayloads": false}' }) do
               disabled_back = @first_seq == @seq
               disabled_forward = @last_seq == @seq
 
-              button(disabled: disabled_back,
-                     data: { on: { click: %(@get('/#{@href_prefix}/#{@events.first.stream_id}/#{@seq - 1}')) } }) do
-                '←'
+              span(class: 'pagination') do
+                button(disabled: disabled_back,
+                       data: { on: { click: %(@get('/#{@href_prefix}/#{@events.first.stream_id}/#{@seq - 1}')) } }) do
+                  '←'
+                end
+                button(disabled: disabled_forward,
+                       data: { on: { click: %(@get('/#{@href_prefix}/#{@events.first.stream_id}/#{@seq + 1}')) } }) do
+                  '→'
+                end
+                small { "current version: #{@seq} " }
               end
-              button(disabled: disabled_forward,
-                     data: { on: { click: %(@get('/#{@href_prefix}/#{@events.first.stream_id}/#{@seq + 1}')) } }) do
-                '→'
+
+              div(class: 'switches') do
+                button(class: 'toggle-payloads', data: { on: { click: '$showPayloads = !$showPayloads' } }) do
+                  span(data: { text: '$showPayloads ? "Hide Payloads" : "Show Payloads"' })
+                end
               end
             end
           end
