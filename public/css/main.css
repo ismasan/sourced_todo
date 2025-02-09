@@ -107,6 +107,7 @@ h1 {
 .todo-item__done .todo-text {
   text-decoration: line-through;
   color: #6b7280;
+  color: green;
 }
 
 .todo-text-action input {
