@@ -50,7 +50,7 @@ class App < Sinatra::Base
     if datastar.sse?
       datastar.stream do |sse|
         sse.execute_script <<-JS
-          history.pushState({}, '', '/todo-lists/#{todo_list.id}/#{upto}')
+          history.replaceState({}, '', '/todo-lists/#{todo_list.id}/#{upto}')
         JS
         sse.merge_fragments Pages::TodoListPage.new(
           todo_list: todo_list.state,
