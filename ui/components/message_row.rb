@@ -25,17 +25,10 @@ module Components
           end
           producer_for(event)
           span(class: 'event-type') do
-            if @href
-              a(data: { 'on-click' => %(@get('#{@href}')) }) { event.type }
-            else
-              strong { event.type }
-            end
+            ref = url("/events/#{event.id}/correlation")
+            a(data: { 'on-click' => %(@get('#{ref}')) }) { event.type }
           end
           span(class: 'event-timestamp') { event.created_at.to_s }
-          span(class: 'event-correlation') do
-            ref = url("/events/#{event.id}/correlation")
-            a(href: '#', data: { 'on-click' => %(@get('#{ref}')) }) { '⇄' }
-          end
         end
         if event.payload
           div(class: 'event-payload', data: { show: '$showPayloads' }) do
