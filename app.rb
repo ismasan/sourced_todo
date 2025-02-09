@@ -85,6 +85,17 @@ class App < Sinatra::Base
     # halt 202
   end
 
+  get '/events/:event_id/correlation' do |event_id|
+    events = Sourced.config.backend.read_correlation_batch(event_id)
+    datastar.stream do |sse|
+      sse.merge_fragments Components::Modal.new(
+        title: 'Event correlation',
+        content: Components::EventsTree.new(events:, highlighted: event_id)
+      )
+      sse.merge_signals modal: true
+    end
+  end
+
   get '/updates/?' do
   end
 end

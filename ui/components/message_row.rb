@@ -26,11 +26,10 @@ module Components
             end
           end
           span(class: 'event-timestamp') { event.created_at.to_s }
-          # if @target
-          #   span(class: 'event-correlation') do
-          #     ModalLink(href: url("/events/#{event.id}/correlation")) { '⇄' }
-          #   end
-          # end
+          span(class: 'event-correlation') do
+            ref = url("/events/#{event.id}/correlation")
+            a(href: '#', data: { 'on-click' => %(@get('#{ref}')) }) { '⇄' }
+          end
         end
         if event.payload
           div(class: 'event-payload', data: { show: '$showPayloads' }) do
