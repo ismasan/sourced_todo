@@ -1,8 +1,8 @@
 body {
   font-family: system-ui, -apple-system, sans-serif;
   max-width: 1200px;
-  margin: 2rem auto;
-  padding: 0 1rem;
+  margin: 0 auto;
+  padding: 0;
   line-height: 1.5;
 }
 
@@ -16,8 +16,12 @@ body {
 }
 
 #sidebar {
-  padding: 3rem;
-  border-left: 1px solid #e5e5e5;
+  position: fixed;
+  right: 0;
+  top: 0;
+  box-sizing: border-box;
+  padding-left: 2rem;
+  width: 535px;
 }
 
 h1 {
@@ -116,7 +120,11 @@ h1 {
 }
 
 #event-list {
-  position: relative;
+  .list {
+    height: calc(100vh - 116px);
+    overflow-y: auto;
+    padding-right: 1em;
+  }
 }
 
 .event-card {
@@ -125,6 +133,7 @@ h1 {
   margin-bottom: 8px;
   padding: 8px 12px;
   font-size: 13px;
+  position: relative;
 }
 
 .event-card.command {
@@ -199,24 +208,14 @@ h1 {
   overflow-x: auto;
 }
 
-/* Arrow indicator */
-.event-card::before {
-  content: "→";
-  position: absolute;
-  left: -2rem;
-  opacity: 0;
-  transition: transform 0.2s, opacity 0.2s;
-  transform: translateX(1rem);
-}
-
 /* Show arrow on selected item */
 .event-card.highlighted {
   background-color: #f3f4f6;
 }
 
-.event-card.highlighted::before {
-  opacity: 1;
-  transform: translateX(0);
+.event-card.highlighted .event-sequence {
+  background-color: green;
+  transition: background-color 0.2s;
 }
 .fade-in {
   opacity: 0;
