@@ -1,18 +1,16 @@
 body {
   font-family: system-ui, -apple-system, sans-serif;
-  max-width: 1200px;
   margin: 0 auto;
   padding: 0;
   line-height: 1.5;
 }
 
 .container {
-  display: flex;
-  gap: 1rem;
 }
 
 #main {
-  width: 800px;
+  margin-right: 33rem;
+  margin-left: 10rem;
 }
 
 #sidebar {
@@ -22,6 +20,39 @@ body {
   box-sizing: border-box;
   padding-left: 2rem;
   width: 535px;
+}
+
+@media (max-width: 1220px) {
+  #main {
+    margin-left: 3rem;
+  }
+}
+
+@media (max-width: 1050px) {
+  #main {
+    margin-left: 1rem;
+  }
+}
+
+@media (max-width: 970px) {
+  #container {
+    padding: 1rem;
+  }
+  #main {
+    margin: 0;
+  }
+  #sidebar {
+    position: relative;
+    width: auto;
+    padding: 0;
+
+    #event-list {
+      .list {
+        padding: 0;
+        overflow-y: initial;
+      }
+    }
+  }
 }
 
 h1 {
