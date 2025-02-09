@@ -179,6 +179,8 @@ h1 {
   border-radius: 3px;
   display: inline-block;
   margin-right: .5em;
+
+  a { cursor: pointer; }
 }
 
 .event-producer {

@@ -16,7 +16,13 @@ module Components
     def view_template
       div(id: event.id, class: @classes) do
         div(class: 'event-header') do
-          span(class: 'event-sequence') { event.seq }
+          span(class: 'event-sequence') do
+            if @href
+              a(data: { 'on-click' => %(@get('#{@href}')) }) { event.seq }
+            else
+              span { event.seq }
+            end
+          end
           producer_for(event)
           span(class: 'event-type') do
             if @href
