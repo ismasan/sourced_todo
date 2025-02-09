@@ -9,11 +9,13 @@ module Components
 
     def view_template
       div id: 'event-list' do
-        h2 { 'History' }
-        if @events.any?
-          p(data: { signals: '{"showPayloads": false}' }) do
-            button(class: 'toggle-payloads', data: { on: { click: '$showPayloads = !$showPayloads' } }) do
-              span(data: { text: '$showPayloads ? "Hide Payloads" : "Show Payloads"' })
+        div class: 'header' do
+          h2 { 'History' }
+          if @events.any?
+            p(data: { signals: '{"showPayloads": false}' }) do
+              button(class: 'toggle-payloads', data: { on: { click: '$showPayloads = !$showPayloads' } }) do
+                span(data: { text: '$showPayloads ? "Hide Payloads" : "Show Payloads"' })
+              end
             end
           end
         end
