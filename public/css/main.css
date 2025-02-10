@@ -1,3 +1,6 @@
+html, body {
+  height: 100%;
+}
 body {
   font-family: system-ui, -apple-system, sans-serif;
   margin: 0 auto;
@@ -5,7 +8,9 @@ body {
   line-height: 1.5;
 }
 
-.container {
+#container {
+  height: 100%;
+  position: relative;
 }
 
 #main {
@@ -55,9 +60,23 @@ body {
   }
 }
 
+@media (min-width: 1400px) {
+  #container { 
+    width: 1400px;
+    margin: 0 auto;
+  }
+  #main {
+    margin-left: 0;
+  }
+  #sidebar {
+    position: absolute;
+  }
+}
+
 h1 {
   color: #1a1a1a;
   margin-bottom: 2rem;
+  margin-top: 0;
 }
 
 .indicator {
