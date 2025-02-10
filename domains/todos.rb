@@ -6,7 +6,7 @@ module Todos
     end
   end
 
-  List = Struct.new(:id, :items, :show_commands,keyword_init: true) do
+  List = Struct.new(:id, :items, keyword_init: true) do
     def find_item(id)
       items.find { |i| i.id == id }
     end
@@ -20,22 +20,6 @@ module Todos
     # All events, not up to
     def history
       events(upto: nil)
-    end
-
-    command :toggle_commands do |list, cmd|
-      if list.show_commands
-        event :hide_commands
-      else
-        event :show_commands
-      end
-    end
-
-    event :show_commands do |list, evt|
-      list.show_commands = true
-    end
-
-    event :hide_commands do |list, evt|
-      list.show_commands = false
     end
 
     command :add_item, text: Types::String.present do |list, cmd|

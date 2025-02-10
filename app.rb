@@ -79,7 +79,6 @@ class App < Sinatra::Base
       sse.merge_fragments Components::TodoList.new(todo_list: actor.state)
       sse.merge_fragments(Components::EventList.new(
         events: actor.events,
-        show_commands: actor.state.show_commands,
         href_prefix: 'todo-lists'
       ))
     end
