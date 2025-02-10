@@ -30,7 +30,8 @@ module Pages
         end
 
         div id: 'sidebar' do
-          Components::EventList(events: @events, seq: @seq, href_prefix: 'todo-lists')
+          Components::EventList(events: @events, seq: @seq, show_commands: @todo_list.show_commands,
+                                href_prefix: 'todo-lists')
         end
       end
     end

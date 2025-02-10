@@ -199,7 +199,16 @@ h1 {
     display: flex;
     margin-bottom: 1rem;
 
-    .switches { flex: 1; }
+    .switches { 
+      flex: 1; 
+      display: flex;
+      gap: 0.5rem;
+
+      form { display: flex; }
+      button {
+        padding: 0.25rem 0.5rem;
+      }
+    }
   }
 
   .pagination {
