@@ -5,6 +5,8 @@ require 'datastar'
 # require_relative 'domains/carts'
 
 class App < Sinatra::Base
+  helpers Phlex::Sinatra
+
   enable :sessions
   enable :method_override
   set :session_secret, ENV.fetch('SESSION_SECRET')
@@ -75,14 +77,14 @@ class App < Sinatra::Base
     raise cmd.errors.inspect unless cmd.valid?
 
     actor, events = Sourced::Router.handle_command(cmd)
-    datastar.stream do |sse|
-      sse.merge_fragments Components::TodoList.new(todo_list: actor.state)
-      sse.merge_fragments(Components::EventList.new(
-        events: actor.events,
-        href_prefix: 'todo-lists'
-      ))
-    end
-    # halt 202
+    # datastar.stream do |sse|
+    #   sse.merge_fragments Components::TodoList.new(todo_list: actor.state)
+    #   sse.merge_fragments(Components::EventList.new(
+    #     events: actor.events,
+    #     href_prefix: 'todo-lists'
+    #   ))
+    # end
+    halt 204
   end
 
   get '/events/:event_id/correlation' do |event_id|
@@ -97,5 +99,27 @@ class App < Sinatra::Base
   end
 
   get '/updates/?' do
+    datastar.stream do |sse|
+      Sourced.config.backend.pubsub.subscribe('system') do |evt, channel|
+        case evt
+        when Todos::ListActor::System::Updated
+          puts "System updated: #{evt}"
+          todo_list = Todos::ListActor.load(evt.stream_id)
+          sse.merge_fragments Pages::TodoListPage.new(
+            todo_list: todo_list.state,
+            events: todo_list.history,
+          )
+        else
+          puts "Unknown event: #{evt}"
+        end
+      end
+    end
   end
+end
+
+trap('INT') do
+  puts('Closing!')
+  sleep 1
+  puts('Byebye!')
+  exit
 end

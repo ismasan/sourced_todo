@@ -34,8 +34,14 @@ module Components
         data = @interactive ? { show: "!$#{edit}", 'on-click' => click, 'on-click__outside' => outside } : {}
 
         div(class: 'todo-text', data:) do
-          todo.text
+          plain todo.text
         end
+
+        div(class: 'todo-services') do
+          todo.services.each do |service|
+            img(height: 24, src: "/images/services/#{service.downcase}.webp", class: 'todo-service')
+          end
+        end if todo.services.any?
 
         Components::Action(Todos::ListActor[:remove_item], attrs: { class: 'todo-delete' }, payload: { id: todo.id }) do |form|
           button { '✖' }

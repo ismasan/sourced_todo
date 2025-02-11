@@ -19,7 +19,8 @@ module Layouts
           script(type: 'module', src: 'https://cdn.jsdelivr.net/gh/starfederation/datastar@v1.0.0-beta.2/bundles/datastar.js')
         end
 
-        body(data: { 'signals' => '{"fetching": false, "modal": false}' }) do
+        onload = { 'on-load' => %(@get('#{url('/updates')}')) }
+        body(data: onload.merge({ 'signals' => '{"fetching": false, "modal": false}' })) do
           yield
           div(id: 'modal', data: { show: '$modal' })
         end

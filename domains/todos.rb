@@ -1,7 +1,8 @@
 module Todos
-  Item = Struct.new(:id, :text, :done, keyword_init: true) do
+  Item = Struct.new(:id, :text, :done, :services, keyword_init: true) do
     def self.build(attrs = {})
       attrs = { id: SecureRandom.uuid, done: false }.merge(attrs)
+      attrs[:services] ||= []
       new(**attrs)
     end
   end
@@ -13,6 +14,10 @@ module Todos
   end
 
   class ListActor < Sourced::Actor
+    module System
+      Updated = ::Sourced::Event.define('todos.list.system.updated')
+    end
+
     state do |id|
       List.new(id:, items: [])
     end
@@ -20,6 +25,15 @@ module Todos
     # All events, not up to
     def history
       events(upto: nil)
+    end
+
+    # This runs in the same transaction
+    # as commiting new events to the backend
+    # Here we publish an ephemeral event
+    # so that the UI can react to it
+    # In future, Sourced will have a special DSL for this
+    sync do |state, command, events|
+      Sourced.config.backend.pubsub.publish('system', command.follow(System::Updated))
     end
 
     command :add_item, text: Types::String.present do |list, cmd|
@@ -48,6 +62,17 @@ module Todos
     event :item_undone, id: String do |list, evt|
       item = list.find_item(evt.payload.id)
       item.done = false
+    end
+
+    command :notify_dispatched, id: Types::String.present, service: String do |list, cmd|
+      item = list.find_item(cmd.payload.id)
+      raise "Item not found with '#{cmd.payload.id}'" unless item
+      event :item_dispatched, cmd.payload
+    end
+
+    event :item_dispatched, id: String, service: String do |list, evt|
+      item = list.find_item(evt.payload.id)
+      item.services << evt.payload.service unless item.services.include?(evt.payload.service)
     end
 
     command :update_item_text, id: Types::String.present, text: Types::String.present do |list, cmd|

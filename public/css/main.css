@@ -158,14 +158,27 @@ h1 {
   flex: 1;
 }
 
-.todo-delete {
-  display: none;
-  margin-top: 0;
-  button {
-    color: red;
+.todo-services {
+  display: flex;
+  gap: 0.5rem;
+
+  img {
+    // fade in effect
+    transition: opacity 0.3s;
   }
 }
-.todo-item:hover .todo-delete {
+
+.todo-delete {
+  margin-top: 0;
+  width: 4rem;
+  text-align: right;
+  button {
+    cursor: pointer;
+    color: red;
+    display: none;
+  }
+}
+.todo-item:hover .todo-delete button {
   display: inline-block;
 }
 
