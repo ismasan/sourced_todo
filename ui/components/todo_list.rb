@@ -6,7 +6,7 @@ module Components
     end
 
     def view_template
-      div id: 'todo-list' do
+      div id: "todo-list-#{@todo_list.id}", class: 'todo-list' do
         if @interactive
           Components::Action(Todos::ListActor[:add_item], attrs: { class: 'todo-form' }) do |form|
             form.text_field(
