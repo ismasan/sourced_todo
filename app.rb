@@ -117,10 +117,14 @@ class App < Sinatra::Base
       channel.stop
     end
 
+    # Hack: need to send a hearbeat
+    # for the Ruby SDK to trigger #on_client_disconnect
+    # if browser disconnected
+    # TODO: fix SDK to detect closed connection event with one #stream block
     datastar.stream do |sse|
       while true
         sleep 1
-        sse.merge_signals(__hb: true)
+        sse.merge_signals(hb: true)
       end
     end
 
@@ -128,11 +132,13 @@ class App < Sinatra::Base
       channel.start do |evt, channel|
         case evt
         when Todos::ListActor::System::Updated
-          todo_list = Todos::ListActor.load(evt.stream_id)
-          sse.merge_fragments Pages::TodoListPage.new(
-            todo_list: todo_list.state,
-            events: todo_list.history,
-          )
+          if sse.signals['page'] == 'Pages::TodoListPage' && sse.signals['id'] == evt.stream_id
+            todo_list = Todos::ListActor.load(evt.stream_id)
+            sse.merge_fragments Pages::TodoListPage.new(
+              todo_list: todo_list.state,
+              events: todo_list.history,
+            )
+          end
         else
           puts "Unknown event: #{evt}"
         end

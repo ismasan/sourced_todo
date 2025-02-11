@@ -19,7 +19,8 @@ module Pages
     end
 
     def container
-      div id: 'container', class: 'container' do
+      div id: 'container', class: 'container',
+          data: { signals: JSON.generate(page: self.class.name, id: @todo_list.id) } do
         div id: 'main' do
           h1 do
             span { 'Todo List' }
