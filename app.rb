@@ -99,11 +99,35 @@ class App < Sinatra::Base
   end
 
   get '/updates/?' do
+    # TODO: here we're listening on a channel
+    # sharred by all clients
+    # In reality we should scope by the current session, or tenant, or user, or todo-list
+    channel = Sourced.config.backend.pubsub.subscribe('system')
+
+    datastar.on_client_disconnect do |*args|
+      puts 'client disconnect'
+      channel.stop
+    end
+    datastar.on_server_disconnect do |*args|
+      puts 'server disconnect'
+      channel.stop
+    end
+    datastar.on_error do |ex|
+      puts "ERROR #{ex}"
+      channel.stop
+    end
+
     datastar.stream do |sse|
-      Sourced.config.backend.pubsub.subscribe('system') do |evt, channel|
+      while true
+        sleep 1
+        sse.merge_signals(__hb: true)
+      end
+    end
+
+    datastar.stream do |sse|
+      channel.start do |evt, channel|
         case evt
         when Todos::ListActor::System::Updated
-          puts "System updated: #{evt}"
           todo_list = Todos::ListActor.load(evt.stream_id)
           sse.merge_fragments Pages::TodoListPage.new(
             todo_list: todo_list.state,
