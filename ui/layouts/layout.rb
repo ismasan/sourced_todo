@@ -16,7 +16,7 @@ module Layouts
           meta(name: 'viewport', content: 'width=device-width, initial-scale=1.0')
           title { @title }
           link(rel: 'stylesheet', href: hashed_asset('/css/main.css'))
-          script(type: 'module', src: 'https://cdn.jsdelivr.net/gh/starfederation/datastar@v1.0.0-beta.2/bundles/datastar.js')
+          script(type: 'module', src: 'https://cdn.jsdelivr.net/gh/starfederation/datastar@v1.0.0-beta.4/bundles/datastar.js')
         end
 
         onload = { 'on-load' => %(@get('#{url('/updates')}')) }
