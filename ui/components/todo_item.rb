@@ -6,7 +6,7 @@ module Components
     end
 
     def view_template
-      edit = "edit#{todo.id[0..7]}"
+      edit = "_edit#{todo.id[0..7]}"
 
       li(
         class: [
