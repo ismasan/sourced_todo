@@ -29,7 +29,7 @@ GEM
       fiber-annotation
       fiber-local (~> 1.1)
       json
-    datastar (1.0.0.beta.1)
+    datastar (1.0.0.beta.2)
       rack (~> 3.0)
     dotenv (3.1.7)
     fiber-annotation (0.2.0)
@@ -50,7 +50,7 @@ GEM
       sinatra
     puma (6.6.0)
       nio4r (~> 2.0)
-    rack (3.1.9)
+    rack (3.1.10)
     rack-protection (4.1.1)
       base64 (>= 0.1.0)
       logger (>= 1.6.0)
