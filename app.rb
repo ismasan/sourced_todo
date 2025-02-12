@@ -35,7 +35,7 @@ class App < Sinatra::Base
 
     def datastar
       @datastar ||= Datastar
-                    .new(request:, response:, view_context: self)
+        .new(request:, response:, view_context: self, heartbeat: 0.4)
                     .on_error do |err|
         puts "Datastar error: #{err}"
         puts err.backtrace.join("\n")
@@ -82,6 +82,8 @@ class App < Sinatra::Base
     )
   end
 
+  # Load a todo list up to a given sequence number
+  # Ex. /todo-lists/important-things/34
   get '/todo-lists/:id/:upto?' do
     interactive = false
     upto = Types::Lax::Integer.parse(params[:upto])
@@ -148,8 +150,14 @@ class App < Sinatra::Base
     # TODO: here we're listening on a channel
     # sharred by all clients
     # In reality we should scope by the current session, or tenant, or user, or todo-list
+    # TODO: PG LISTEN allows subsribing to multiple channels
+    # ie pubsub.subscribe(['system'], ['tenant-1'])
+    # This could be beneficial
     channel = Sourced.config.backend.pubsub.subscribe('system')
 
+    datastar.on_connect do |*args|
+      puts 'client connect'
+    end
     datastar.on_client_disconnect do |*args|
       puts 'client disconnect'
       channel.stop
@@ -161,17 +169,6 @@ class App < Sinatra::Base
     datastar.on_error do |ex|
       puts "ERROR #{ex}"
       channel.stop
-    end
-
-    # Hack: need to send a hearbeat
-    # for the Ruby SDK to trigger #on_client_disconnect
-    # if browser disconnected
-    # TODO: fix SDK to detect closed connection event with one #stream block
-    datastar.stream do |sse|
-      while true
-        sleep 1
-        sse.merge_signals(hb: true)
-      end
     end
 
     datastar.stream do |sse|
