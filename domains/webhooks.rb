@@ -27,32 +27,33 @@ module Webhooks
     end
 
     event Todos::ListActor::ItemDone do |state, evt|
-      state[:items][evt.payload.id][:done] ||= 0
-      state[:items][evt.payload.id][:done] += 1
-      state[:items][evt.payload.id][:last_done] = evt.created_at
-      state[:items][evt.payload.id][:member] = evt.metadata[:username]
+      item = state[:items][evt.payload.id]
+      item[:dones] ||= []
+      item[:dones] << item[:text]
+      item[:dones].shift if item[:dones].size > 2
+      item[:member] = evt.metadata[:username]
     end
 
     react_with_state Todos::ListActor[:item_done] do |state, evt|
       item = state[:items][evt.payload.id]
-      if item[:done] > 1 && (Time.now - item[:last_done]) < 60
+      if item[:dones].size == 2 && (item[:dones].last == item[:dones].first)
         # Do we want to post a different message to Slack?
-        puts "Item #{evt.payload.id} has been done #{item[:done]} times"
+        puts "Item #{evt.payload.id} has been done recently already"
+      else
+        # Lets pretend this is really slow
+        sleep 3
+        # TODO: error handling
+        # Here we have some options:
+        # * raise an exception to have the workers retry (indefinitely)
+        # * keep count of retries and stop after N retries
+        # * send a different command to the ListActor to notify the error
+        Slack.post(texts: [
+          "Item '#{item[:text]}' has been done by <@#{item[:member]}>",
+          "list: <http://localhost:9292/todo-lists/#{state[:id]}|#{state[:name]}>"
+        ])
+
+        command Todos::ListActor::NotifyDispatched, id: evt.payload.id, service: 'Slack'
       end
-
-      # Lets pretend this is really slow
-      sleep 3
-      # TODO: error handling
-      # Here we have some options:
-      # * raise an exception to have the workers retry (indefinitely)
-      # * keep count of retries and stop after N retries
-      # * send a different command to the ListActor to notify the error
-      Slack.post(texts: [
-        "Item '#{item[:text]}' has been done by <@#{item[:member]}>",
-        "list: <http://localhost:9292/todo-lists/#{state[:id]}|#{state[:name]}>"
-      ])
-
-      command Todos::ListActor::NotifyDispatched, id: evt.payload.id, service: 'Slack'
     end
   end
 end
