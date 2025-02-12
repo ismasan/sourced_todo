@@ -11,7 +11,11 @@ module Webhooks
   # When it's done, it dispatches a Todos::ListActor::NotifyDispatched to Todos::ListActor
   class SlackDispatcher < Sourced::Actor
     state do |id|
-      { id:, items: {} }
+      { id:, name: nil, items: {} }
+    end
+
+    event Todos::ListActor::Created do |state, evt|
+      state[:name] = evt.payload.name
     end
 
     event Todos::ListActor::ItemAdded do |state, evt|
@@ -26,6 +30,7 @@ module Webhooks
       state[:items][evt.payload.id][:done] ||= 0
       state[:items][evt.payload.id][:done] += 1
       state[:items][evt.payload.id][:last_done] = evt.created_at
+      state[:items][evt.payload.id][:member] = evt.metadata[:username]
     end
 
     react_with_state Todos::ListActor[:item_done] do |state, evt|
@@ -42,7 +47,10 @@ module Webhooks
       # * raise an exception to have the workers retry (indefinitely)
       # * keep count of retries and stop after N retries
       # * send a different command to the ListActor to notify the error
-      Slack.post(text: "Item '#{item[:text]}' has been done")
+      Slack.post(texts: [
+        "Item '#{item[:text]}' has been done by <@#{item[:member]}>",
+        "list: <http://localhost:9292/todo-lists/#{state[:id]}|#{state[:name]}>"
+      ])
 
       command Todos::ListActor::NotifyDispatched, id: evt.payload.id, service: 'Slack'
     end

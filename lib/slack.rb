@@ -13,23 +13,19 @@ class Slack
     @url = url
   end
 
-  def post(text:)
+  def post(texts: [])
     uri = URI(@url)
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
 
-    payload = { 
-      text:,
-      blocks: [
+    payload = {
+      text: texts.first,
+      blocks: texts.map do |text|
         {
           type: 'section',
           text: { type: 'mrkdwn', text: text }
-        },
-        {
-          type: 'section',
-          text: { type: 'mrkdwn', text: 'List name: demo' }
         }
-      ]
+      end
     }
 
     request = Net::HTTP::Post.new(uri)
@@ -39,4 +35,3 @@ class Slack
     http.request(request)
   end
 end
-
