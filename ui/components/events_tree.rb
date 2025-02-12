@@ -32,6 +32,9 @@ module Components
 
     def view_template
       div(class: 'events-timeline') do
+        button(class: 'toggle-payloads', data: { on: { click: '$showPayloads = !$showPayloads' } }) do
+          span(data: { text: '$showPayloads ? "Hide Payloads" : "Show Payloads"' })
+        end
         ul(class: 'tree tree-view') do
           @events.each do |node|
             render_node(node)
