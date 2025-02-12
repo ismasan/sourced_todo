@@ -34,7 +34,7 @@ Sourced.config.backend.install # unless Sourced.config.backend.installed?
 # Register Sourced deciders and reactors
 Sourced.register(Todos::ListActor)
 Sourced.register(Webhooks::SlackDispatcher) if ENV['SLACK_WEBHOOK_URL']
-# Sourced.register(Carts::Listings)
+Sourced.register(Listings)
 # Sourced.register(Carts::Webhooks)
 # Sourced.register(Inventory::Processor)
 # Sourced.register(Leads::Lead)

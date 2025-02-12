@@ -7,12 +7,6 @@ GIT
       concurrent-ruby
 
 PATH
-  remote: /Users/ismasan/code/personal/gems/datastar/sdk/ruby
-  specs:
-    datastar (1.0.0.beta.1)
-      rack (~> 3.0)
-
-PATH
   remote: /Users/ismasan/code/personal/gems/sourced
   specs:
     sourced (0.0.1)
@@ -35,6 +29,8 @@ GEM
       fiber-annotation
       fiber-local (~> 1.1)
       json
+    datastar (1.0.0.beta.1)
+      rack (~> 3.0)
     dotenv (3.1.7)
     fiber-annotation (0.2.0)
     fiber-local (1.1.0)
@@ -82,7 +78,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  datastar!
+  datastar
   dotenv
   pg
   phlex (= 2.0.0.rc1)

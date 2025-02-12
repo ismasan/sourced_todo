@@ -10,7 +10,7 @@ gem 'phlex', '2.0.0.rc1'
 gem 'phlex-sinatra'
 gem 'puma'
 
-gem 'datastar', path: '/Users/ismasan/code/personal/gems/datastar/sdk/ruby'
+gem 'datastar' # , path: '/Users/ismasan/code/personal/gems/datastar/sdk/ruby'
 gem 'dotenv'
 gem 'pg'
 gem 'plumb', github: 'ismasan/plumb'

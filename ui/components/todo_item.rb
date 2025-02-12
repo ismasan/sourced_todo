@@ -1,7 +1,8 @@
 module Components
   class TodoItem < Phlex::HTML
-    def initialize(todo, interactive: true)
+    def initialize(todo, list_id, interactive: true)
       @todo = todo
+      @list_id = list_id
       @interactive = interactive
     end
 
@@ -16,14 +17,14 @@ module Components
         data: { "signals-#{edit}" => 'false' },
         id: dom_id
       ) do
-        Components::Action(Todos::ListActor[:toggle_item], payload: { id: todo.id }, on: :change) do |form|
+        Components::Action(Todos::ListActor[:toggle_item], stream_id: @list_id, payload: { id: todo.id }, on: :change) do |form|
           form.check_box('done', value: todo.done, checked: todo.done, disabled: !@interactive, class: 'todo-checkbox')
         end
 
         edit_field_id = dom_id('edit')
 
         div(class: 'todo-text-action', data: { show: "$#{edit}" }) do
-          Components::Action(Todos::ListActor[:update_item_text], payload: { id: todo.id }) do |form|
+          Components::Action(Todos::ListActor[:update_item_text], stream_id: @list_id, payload: { id: todo.id }) do |form|
             form.text_field('text', value: todo.text, id: edit_field_id, disabled: !@interactive)
           end
         end
@@ -43,7 +44,7 @@ module Components
           end
         end if todo.services.any?
 
-        Components::Action(Todos::ListActor[:remove_item], attrs: { class: 'todo-delete' }, payload: { id: todo.id }) do |form|
+        Components::Action(Todos::ListActor[:remove_item], stream_id: @list_id, attrs: { class: 'todo-delete' }, payload: { id: todo.id }) do |form|
           button { '✖' }
         end if @interactive
       end

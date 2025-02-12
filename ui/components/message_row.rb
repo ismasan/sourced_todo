@@ -29,6 +29,7 @@ module Components
             a(data: { 'on-click' => %(@get('#{ref}')) }) { event.type }
           end
           span(class: 'event-timestamp') { event.created_at.to_s }
+          span(class: 'event-author') { event.metadata[:username].to_s }
         end
         if event.payload
           div(class: 'event-payload', data: { show: '$showPayloads' }) do

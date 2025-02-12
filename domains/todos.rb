@@ -7,7 +7,7 @@ module Todos
     end
   end
 
-  List = Struct.new(:id, :items, keyword_init: true) do
+  List = Struct.new(:id, :name, :items, keyword_init: true) do
     def find_item(id)
       items.find { |i| i.id == id }
     end
@@ -19,7 +19,7 @@ module Todos
     end
 
     state do |id|
-      List.new(id:, items: [])
+      List.new(id:, name: nil, items: [])
     end
 
     # All events, not up to
@@ -34,6 +34,14 @@ module Todos
     # In future, Sourced will have a special DSL for this
     sync do |state, command, events|
       Sourced.config.backend.pubsub.publish('system', command.follow(System::Updated))
+    end
+
+    command :create, name: Types::String.present do |list, cmd|
+      event :created, cmd.payload
+    end
+
+    event :created, name: String do |list, evt|
+      list.name = evt.payload.name
     end
 
     command :add_item, text: Types::String.present do |list, cmd|

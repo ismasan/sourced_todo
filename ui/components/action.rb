@@ -1,8 +1,10 @@
 module Components
   class Action < Phlex::HTML
-    def initialize(command_class, attrs: {}, payload: {}, on: 'submit')
+    def initialize(command_class, stream_id: nil, attrs: {}, payload: {}, on: 'submit')
       @hidden_payload = payload
-      @command = command_class.new(payload:)
+      args = { payload: }
+      args[:stream_id] = stream_id if stream_id
+      @command = command_class.new(args)
       @attrs = attrs
       @on = on
     end

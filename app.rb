@@ -12,17 +12,24 @@ class App < Sinatra::Base
   set :session_secret, ENV.fetch('SESSION_SECRET')
   # set :session_secret, ENV.fetch('SESSION_SECRET') { SecureRandom.hex(64) }
 
-  DEMO_TODO_LIST = 'demo-todo-list'
+  User = Data.define(:username)
 
   helpers do
-    def todo_list_id
-      DEMO_TODO_LIST
+    def logged_in?
+      !!session[:username]
+    end
+
+    def current_user
+      @current_user ||= User.new(username: session[:username])
     end
 
     def command_context
       @command_context ||= Sourced::CommandContext.new(
-        stream_id: todo_list_id,
-        metadata: { producer: 'UI' }
+        stream_id: SecureRandom.uuid,
+        metadata: { 
+          producer: 'UI',
+          username: current_user&.username
+        }
       )
     end
 
@@ -37,7 +44,37 @@ class App < Sinatra::Base
   end
 
   get '/?' do
-    todo_list = Todos::ListActor.load(todo_list_id)
+    if logged_in?
+      lists = Dir['./storage/todo_lists/*.json'].map do |file|
+        JSON.parse(File.read(file), symbolize_names: true)
+      end.sort_by { |list| list[:created_at_int] }.reverse
+
+      phlex Pages::HomePage.new(lists:, layout: true)
+    else
+      phlex Pages::LoginPage.new
+    end
+  end
+
+  post '/login/?' do
+    form = Types::LoginForm.resolve(params)
+    if form.valid?
+      session[:username] = form.value[:username]
+      redirect '/'
+    else
+      phlex Pages::LoginPage.new(
+        params: form.value,
+        errors: form.errors
+      )
+    end
+  end
+
+  get '/logout/?' do
+    session.delete :username
+    redirect '/'
+  end
+
+  get '/todo-lists/:id/?' do |id|
+    todo_list = Todos::ListActor.load(id)
     phlex Pages::TodoListPage.new(
       todo_list: todo_list.state, 
       events: todo_list.events,
@@ -49,6 +86,8 @@ class App < Sinatra::Base
     interactive = false
     upto = Types::Lax::Integer.parse(params[:upto])
     todo_list = Todos::ListActor.load(params[:id], upto:)
+    # If this is an SSE request, stream the view back to to the browser
+    # If a normal page load, render normally with layout
     if datastar.sse?
       datastar.stream do |sse|
         sse.execute_script <<-JS
@@ -74,9 +113,16 @@ class App < Sinatra::Base
 
   post '/commands/?' do
     cmd = command_context.build(params[:command].to_h)
+    Console.info cmd.inspect
+    # TODO: if command is invalid
+    # notify the UI
     raise cmd.errors.inspect unless cmd.valid?
 
     actor, events = Sourced::Router.handle_command(cmd)
+    # Here we can run the command and render the list
+    # back to the UI, or we can return a 204
+    # and let the SSE stream pick up the event and update the UI
+    #
     # datastar.stream do |sse|
     #   sse.merge_fragments Components::TodoList.new(todo_list: actor.state)
     #   sse.merge_fragments(Components::EventList.new(
@@ -132,12 +178,20 @@ class App < Sinatra::Base
       channel.start do |evt, channel|
         case evt
         when Todos::ListActor::System::Updated
-          if sse.signals['page'] == 'Pages::TodoListPage' && sse.signals['id'] == evt.stream_id
+          if sse.signals['page_key'] == 'Pages::TodoListPage' && sse.signals['page_id'] == evt.stream_id
             todo_list = Todos::ListActor.load(evt.stream_id)
             sse.merge_fragments Pages::TodoListPage.new(
               todo_list: todo_list.state,
               events: todo_list.history,
             )
+          end
+        when Listings::System::Updated
+          if sse.signals['page_key'] == 'Pages::HomePage'
+            lists = Dir['./storage/todo_lists/*.json'].map do |file|
+              JSON.parse(File.read(file), symbolize_names: true)
+            end.sort_by { |list| list[:created_at_int] }.reverse
+
+            sse.merge_fragments Pages::HomePage.new(lists:)
           end
         else
           puts "Unknown event: #{evt}"
