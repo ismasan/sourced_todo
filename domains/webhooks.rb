@@ -26,6 +26,11 @@ module Webhooks
       state[:items][evt.payload.id][:text] = evt.payload.text
     end
 
+    # Keep track of what the item text was during the last
+    # two consecutive `done` events
+    # So that we don't post the same message to Slack twice
+    # This is a fairly arbitrary rule, but it's just an example
+    # of how events allow us to implement "history sensitive" logic
     event Todos::ListActor::ItemDone do |state, evt|
       item = state[:items][evt.payload.id]
       item[:dones] ||= []
