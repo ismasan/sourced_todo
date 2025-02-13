@@ -39,10 +39,14 @@ class Listings < Sourced::Projector::EventSourced
   # This block runs in a transaction when handling events
   # Just write a JSON representation of these listings
   sync do |list, _command, events|
-    FileUtils.mkdir_p('storage/todo_lists')
-
     path = "./storage/todo_lists/#{list[:id]}.json"
-    File.write(path, JSON.pretty_generate(list))
+
+    if list[:status] == 'deleted'
+      File.unlink(path) if File.exist?(path)
+    else
+      FileUtils.mkdir_p('storage/todo_lists')
+      File.write(path, JSON.pretty_generate(list))
+    end
   end
 
   sync do |list, _command, events|
@@ -84,5 +88,9 @@ class Listings < Sourced::Projector::EventSourced
 
   event Todos::ListActor::Archived do |list, event|
     list[:status] = 'archived'
+  end
+
+  event Todos::ListActor::Deleted do |list, event|
+    list[:status] = 'deleted'
   end
 end

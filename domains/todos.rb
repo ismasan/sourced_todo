@@ -21,6 +21,7 @@ module Todos
     attribute :items, Types::Array[Item].with_blank_default, writer: true
 
     def active? = status == 'active'
+    def archived? = status == 'archived'
 
     def find_item(id)
       items.find { |i| i.id == id }
@@ -151,6 +152,15 @@ module Todos
 
     event :archived do |list, evt|
       list.status = 'archived'
+    end
+
+    command :delete do |list, cmd|
+      if list.archived?
+        event :deleted
+      end
+    end
+
+    event :deleted do |list, evt|
     end
   end
 end

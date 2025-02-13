@@ -29,6 +29,10 @@ module Components
                 Components::Action(Todos::ListActor::Archive, stream_id: list[:id]) do |_form|
                   button(type: 'submit') { 'Archive' }
                 end
+              elsif list[:status] == 'archived'
+                Components::Action(Todos::ListActor::Delete, stream_id: list[:id]) do |_form|
+                  button(type: 'submit') { 'Delete' }
+                end
               end
             end
           end
