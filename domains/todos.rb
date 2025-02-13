@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 module Todos
   class Item < Types::Data
-    attribute :id, Types::String.default { SecureRandom.uuid }, writer: true
-    attribute :text, String, writer: true
+    attribute :id, Types::AutoUUID, writer: true
+    attribute :text, Types::NullableDefaultString, writer: true
     attribute :done, Types::Boolean.default(false), writer: true
     attribute :services, Types::Array[String].default([].freeze), writer: true
 
@@ -11,9 +13,10 @@ module Todos
   end
 
   class List < Types::Data
-    attribute :id, String, writer: true
-    attribute :name, String, writer: true
-    attribute :items, Types::Array[Item].default([].freeze), writer: true
+    attribute :id, Types::NullableDefaultString, writer: true
+    attribute :name, Types::NullableDefaultString, writer: true
+    attribute :status, Types::String.options(%w[active archived]).default('active'), writer: true
+    attribute :items, Types::Array[Item].with_blank_default, writer: true
 
     def find_item(id)
       items.find { |i| i.id == id }
