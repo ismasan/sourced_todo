@@ -1,6 +1,8 @@
   # A projector
   # "reacts" to events registered with .evolve
 class Listings < Sourced::Projector::EventSourced
+  DATA_DIR = './storage/todo_lists'
+
   module System
     Updated = ::Sourced::Event.define('todos.listings.system.updated')
   end
@@ -39,16 +41,26 @@ class Listings < Sourced::Projector::EventSourced
   # This block runs in a transaction when handling events
   # Just write a JSON representation of these listings
   sync do |list, _command, events|
-    path = "./storage/todo_lists/#{list[:id]}.json"
+    path = File.join(DATA_DIR, "#{list[:id]}.json")
 
     if list[:status] == 'deleted'
       File.unlink(path) if File.exist?(path)
     else
-      FileUtils.mkdir_p('storage/todo_lists')
+      FileUtils.mkdir_p(DATA_DIR)
       File.write(path, JSON.pretty_generate(list))
     end
   end
 
+  # Let's give this class a repository interface
+  # So that everything about this data is encapsuated here
+  def self.all
+    Dir[File.join(DATA_DIR, '*.json')].map do |file|
+      JSON.parse(File.read(file), symbolize_names: true)
+    end.sort_by { |list| list[:created_at_int] }.reverse
+  end
+
+  # Emit an ephemeral event every time this projection is updates
+  # so that the UI can react to it
   sync do |list, _command, events|
     Sourced.config.backend.pubsub.publish('system', events.last.follow(System::Updated))
   end

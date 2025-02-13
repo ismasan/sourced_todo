@@ -45,11 +45,7 @@ class App < Sinatra::Base
 
   get '/?' do
     if logged_in?
-      lists = Dir['./storage/todo_lists/*.json'].map do |file|
-        JSON.parse(File.read(file), symbolize_names: true)
-      end.sort_by { |list| list[:created_at_int] }.reverse
-
-      phlex Pages::HomePage.new(lists:, layout: true)
+      phlex Pages::HomePage.new(lists: Listings.all, layout: true)
     else
       phlex Pages::LoginPage.new
     end
@@ -148,6 +144,8 @@ class App < Sinatra::Base
   end
 
   get '/updates/?' do
+    # Sourced::Ui.serve(request:, response:, view_context: self)
+
     # TODO: here we're listening on a channel
     # sharred by all clients
     # In reality we should scope by the current session, or tenant, or user, or todo-list
@@ -185,11 +183,7 @@ class App < Sinatra::Base
           end
         when Listings::System::Updated
           if sse.signals['page_key'] == 'Pages::HomePage'
-            lists = Dir['./storage/todo_lists/*.json'].map do |file|
-              JSON.parse(File.read(file), symbolize_names: true)
-            end.sort_by { |list| list[:created_at_int] }.reverse
-
-            sse.merge_fragments Pages::HomePage.new(lists:)
+            sse.merge_fragments Pages::HomePage.new(lists: Listings.all)
           end
         else
           puts "Unknown event: #{evt}"
