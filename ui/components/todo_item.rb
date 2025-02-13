@@ -1,9 +1,10 @@
 module Components
   class TodoItem < Phlex::HTML
-    def initialize(todo, list_id, interactive: true)
+    def initialize(todo, list_id, interactive: true, duplicated_id: nil)
       @todo = todo
       @list_id = list_id
       @interactive = interactive
+      @duplicated_id = duplicated_id
     end
 
     def view_template
@@ -12,7 +13,8 @@ module Components
       li(
         class: [
           'todo-item',
-          ('todo-item__done' if todo.done)
+          ('todo-item__done' if todo.done),
+          ('todo-item__duplicated' if todo.id == @duplicated_id)
         ],
         data: { "signals-#{edit}" => 'false' },
         id: dom_id

@@ -211,6 +211,16 @@ h1 {
   padding: 0;
 }
 
+.paused {
+  input {
+    color: red;
+  }
+}
+.paused-message {
+  margin-top: 0.25rem;
+  border: 1px solid #f5c6cb;
+  padding: 1rem;
+}
 .todo-list-header {
   min-height: 50px;
   display: flex;
@@ -236,6 +246,10 @@ h1 {
   margin-bottom: 0.5rem;
 }
 
+.todo-item__duplicated {
+  background-color: #f8d7da;
+  transition: background-color 0.3s;
+}
 .todo-checkbox {
   margin-right: 1rem;
   width: 1.2rem;

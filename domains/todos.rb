@@ -19,12 +19,19 @@ module Todos
     attribute :name, Types::NullableDefaultString, writer: true
     attribute :status, Types::String.options(%w[active archived]).default('active'), writer: true
     attribute :items, Types::Array[Item].with_blank_default, writer: true
+    attribute :duplicated_item, Item.nullable.default(nil), writer: true
+    attribute :paused, Types::Boolean.default(false), writer: true
 
     def active? = status == 'active'
     def archived? = status == 'archived'
 
     def find_item(id)
       items.find { |i| i.id == id }
+    end
+
+    def find_item_by_text(text)
+      text = text.downcase.strip
+      items.find { |i| i.text.downcase.strip == text }
     end
 
     def add_item(args = {})
@@ -86,11 +93,24 @@ module Todos
 
     command :add_item, text: Types::String.present do |list, cmd|
       if list.active?
-        event :item_added, id: SecureRandom.uuid, text: cmd.payload.text
+        previous_item = list.find_item_by_text(cmd.payload.text)
+        if previous_item
+          event :item_duplicated, id: previous_item.id
+        else
+          event :item_added, id: SecureRandom.uuid, text: cmd.payload.text
+        end
       end
     end
 
+    event :item_duplicated, id: String do |list, evt|
+      item = list.find_item(evt.payload.id)
+      list.duplicated_item = item
+      list.paused = true
+    end
+
     event :item_added, id: String, text: String do |list, evt|
+      list.duplicated_item = nil
+      list.paused = false
       list.add_item(evt.payload.to_h)
     end
 
