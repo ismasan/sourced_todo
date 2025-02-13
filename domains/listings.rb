@@ -70,6 +70,10 @@ class Listings < Sourced::Projector::EventSourced
     list[:created_at_int] = event.created_at.to_i
   end
 
+  event Todos::ListActor::NameUpdated do |list, event|
+    list[:name] = event.payload.name
+  end
+
   event Todos::ListActor::ItemAdded do |list, event|
     list[:item_count] += 1
   end

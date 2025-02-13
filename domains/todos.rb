@@ -74,6 +74,16 @@ module Todos
       list.name = evt.payload.name
     end
 
+    command :update_name, name: Types::String.present do |list, cmd|
+      if list.name != cmd.payload.name
+        event :name_updated, cmd.payload
+      end
+    end
+
+    event :name_updated, name: String do |list, evt|
+      list.name = evt.payload.name
+    end
+
     command :add_item, text: Types::String.present do |list, cmd|
       if list.active?
         event :item_added, id: SecureRandom.uuid, text: cmd.payload.text

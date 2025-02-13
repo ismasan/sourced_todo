@@ -7,10 +7,10 @@ module Components
     def view_template
       table(class: 'table') do
         tr do
-          th { 'Name' }
-          th { 'Progress' }
-          th { 'Members' }
-          th { 'Updated at' }
+          th(class: 'name-row') { 'Name' }
+          th(class: 'progress-row') { 'Progress' }
+          th(class: 'members-row') { 'Members' }
+          th(class: 'date-row') { 'Updated at' }
           th(class: 'status-row') { 'Status' }
           th(class: 'tools-row') { '' }
         end
@@ -22,7 +22,7 @@ module Components
               progress(max: list[:item_count], value: list[:done_count], class: 'progress')
             end
             td { list[:members].join(', ') }
-            td { list[:updated_at] }
+            td { small { list[:updated_at] } }
             td { Components::StatusBadge(list[:status]) }
             td do
               if list[:status] == 'active'

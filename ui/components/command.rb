@@ -10,10 +10,10 @@ module Components
     end
 
     def view_template
-      data = { 
+      data = @attrs.fetch(:data, {}).merge(
         "on-#{@on}" => "@post('#{url('/commands')}', {contentType: 'form'})", 
         'indicator-fetching' => true
-      }
+      )
       attrs = @attrs.merge(data:)
 
       form(**attrs) do

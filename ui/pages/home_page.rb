@@ -12,11 +12,15 @@ module Pages
     def container
       div id: 'main' do
         h1 { 'TODO lists' }
-        h3 { 'Active' }
-        Components::TodoLists(lists: @active)
+        if @active.any?
+          h3 { 'Active' }
+          Components::TodoLists(lists: @active)
+        end
 
-        h3 { 'Archived' }
-        Components::TodoLists(lists: @archived)
+        if @archived.any?
+          h3 { 'Archived' }
+          Components::TodoLists(lists: @archived)
+        end
       end
 
       div id: 'sidebar' do

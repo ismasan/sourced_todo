@@ -198,6 +198,11 @@ h1 {
     margin: 0;
   }
 }
+.editable-name {
+  form {
+    margin-top: 0.25rem;
+  }
+}
 .todo-item {
   display: flex;
   align-items: center;
@@ -536,8 +541,25 @@ h1 {
   border-collapse: collapse;
   font-family: system-ui, sans-serif;
   font-size: 14px;
+  .name-row {
+    width: 25%;
+  }
   .tools-row {
-    width: 4rem;
+    width: 5%;
+  }
+  .members-row {
+    width: 10%;
+  }
+  .progress-row {
+    width: 10%;
+  }
+  .date-row {
+    width: 22%;
+  }
+
+  .status-badge {
+    display: block;
+    text-align: center;
   }
 }
 
