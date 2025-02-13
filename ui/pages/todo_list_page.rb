@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Pages
   class TodoListPage < Pages::Page
     def initialize(todo_list:, events: [], seq: nil, layout: false, interactive: true)
@@ -6,7 +8,7 @@ module Pages
       @todo_list = todo_list
       @events = events
       @seq = seq
-      @interactive = interactive
+      @interactive = interactive && @todo_list.active?
     end
 
     private
@@ -16,8 +18,9 @@ module Pages
 
     def container
       div id: 'main' do
-        h1 do
-          span { @todo_list.name }
+        div class: 'todo-list-header' do
+          h1 { @todo_list.name }
+          Components::StatusBadge(@todo_list.status)
           span(class: 'indicator', data: { show: '$fetching' }) { '...' }
         end
 

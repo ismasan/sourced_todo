@@ -188,6 +188,16 @@ h1 {
   padding: 0;
 }
 
+.todo-list-header {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+
+  h1 {
+    margin: 0;
+  }
+}
 .todo-item {
   display: flex;
   align-items: center;
@@ -526,6 +536,9 @@ h1 {
   border-collapse: collapse;
   font-family: system-ui, sans-serif;
   font-size: 14px;
+  .tools-row {
+    width: 4rem;
+  }
 }
 
 .table th {
@@ -541,4 +554,19 @@ h1 {
   padding: 12px 16px;
   border-bottom: 1px solid #edf2f7;
   color: #2d3748;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.25em 0.6em;
+  color: #fff;
+  background: #e2e8f0;
+  border-radius: 0.25em;
+}
+
+.status-badge.active {
+  background: #68d391;
+}
+.status-badge.archived {
+  background: #718096;
 }

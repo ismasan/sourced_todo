@@ -30,6 +30,7 @@ class Listings < Sourced::Projector::EventSourced
       members: [],
       item_count: 0,
       done_count: 0,
+      status: 'active',
       created_at_int: 0,
       udpated_at: nil
     }
@@ -55,8 +56,8 @@ class Listings < Sourced::Projector::EventSourced
 
   before_evolve do |list, event|
     list[:seq] = event.seq
-    username = event.metadata[:username]
-    list[:members] << username unless list[:members].include?(username)
+    username = event.metadata[:username]&.downcase
+    list[:members] << username if username && !list[:members].include?(username)
     list[:updated_at] = event.created_at
   end
 
@@ -79,5 +80,9 @@ class Listings < Sourced::Projector::EventSourced
 
   event Todos::ListActor::ItemUndone do |list, event|
     list[:done_count] -= 1
+  end
+
+  event Todos::ListActor::Archived do |list, event|
+    list[:status] = 'archived'
   end
 end

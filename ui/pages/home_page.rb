@@ -2,7 +2,7 @@ module Pages
   class HomePage < Pages::Page
     def initialize(lists: [], layout: false)
       super(layout:)
-      @lists = lists
+      @active, @archived = lists.partition { |list| list[:status] == 'active' }
     end
 
     private
@@ -12,25 +12,11 @@ module Pages
     def container
       div id: 'main' do
         h1 { 'TODO lists' }
-        table(class: 'table') do
-          tr do
-            th { 'Name' }
-            th { 'Progress' }
-            th { 'Members' }
-            th { 'Updated at' }
-          end
+        h3 { 'Active' }
+        Components::TodoLists(lists: @active)
 
-          @lists.each do |list|
-            tr do
-              td { a(href: url("/todo-lists/#{list[:id]}")) { list[:name] } }
-              td do
-                progress(max: list[:item_count], value: list[:done_count], class: 'progress')
-              end
-              td { list[:members].join(', ') }
-              td { list[:updated_at] }
-            end
-          end
-        end
+        h3 { 'Archived' }
+        Components::TodoLists(lists: @archived)
       end
 
       div id: 'sidebar' do

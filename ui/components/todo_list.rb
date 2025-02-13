@@ -8,8 +8,11 @@ module Components
     def view_template
       div id: "todo-list-#{@todo_list.id}", class: 'todo-list' do
         if @interactive
-          Components::Action(Todos::ListActor[:add_item], stream_id: @todo_list.id,
-                                                          attrs: { class: 'todo-form' }) do |form|
+          Components::Action(
+            Todos::ListActor::AddItem,
+            stream_id: @todo_list.id,
+            attrs: { class: 'todo-form' }
+          ) do |form|
             form.text_field(
               'text',
               class: 'todo-input',
@@ -18,17 +21,19 @@ module Components
             )
             button(type: 'submit', class: 'todo-button') { 'Add' }
           end
-        else
+        elsif @todo_list.active?
           p { a(href: url("/todo-lists/#{@todo_list.id}")) { 'Back to list' } }
         end
 
-        div(class: 'filters') do
-          input(type: 'radio', name: 'filter', id: 'filter-all', checked: 'checked')
-          label(for: 'filter-all') { 'All' }
-          input(type: 'radio', name: 'filter', id: 'filter-open')
-          label(for: 'filter-open') { 'Open' }
-          input(type: 'radio', name: 'filter', id: 'filter-done')
-          label(for: 'filter-done') { 'Done' }
+        if @todo_list.items.any?
+          div(class: 'filters') do
+            input(type: 'radio', name: 'filter', id: 'filter-all', checked: 'checked')
+            label(for: 'filter-all') { 'All' }
+            input(type: 'radio', name: 'filter', id: 'filter-open')
+            label(for: 'filter-open') { 'Open' }
+            input(type: 'radio', name: 'filter', id: 'filter-done')
+            label(for: 'filter-done') { 'Done' }
+          end
         end
 
         ul(class: 'todo-list') do
