@@ -1,5 +1,18 @@
 module Pages
   class HomePage < Pages::Page
+
+    # React to initial page load
+    # react 'GET /todo-lists' do |evt|
+    #   lists = Listings.all
+    #   ui.render Pages::HomePage.new(lists:)
+    # end
+    #
+    # # React to async event
+    # react Listings::System::Updated do |evt|
+    #   lists = Listings.all
+    #   ui.merge_fragments Pages::HomePage.new(lists:)
+    # end
+
     def initialize(lists: [], layout: false)
       super(layout:)
       @active, @archived = lists.partition { |list| list[:status] == 'active' }

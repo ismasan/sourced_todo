@@ -128,14 +128,14 @@ class App < Sinatra::Base
     # If the command is invalid, I send back those signals with error messages
     cmd = command_context.build(params[:command].to_h)
     Console.info cmd.inspect
-    if cmd.valid?
+    if cmd.valid? # <== schedule valid command for processing
       Sourced.config.backend.schedule_commands([cmd])
       halt 204
-    elsif cmd.errors[:payload]
+    elsif cmd.errors[:payload] # <== Send back error signals to UI
       cid = datastar.signals['command']['_cid']
       error_signals = { cid => cmd.errors[:payload] }
       datastar.merge_signals(error_signals)
-    else
+    else # <== This should never happen
       Console.error cmd.errors
       422
     end

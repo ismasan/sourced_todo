@@ -2,6 +2,14 @@
 
 module Pages
   class TodoListPage < Pages::Page
+    # react Todos::ListActor::System::Updated do |evt|
+    #   todo_list = Todos::ListActor.load(evt.stream_id)
+    #   ui.merge_fragments Pages::TodoListPage.new(
+    #     todo_list: todo_list.state,
+    #     events: todo_list.history,
+    #   )
+    # end
+
     def initialize(todo_list:, events: [], seq: nil, layout: false, interactive: true)
       super(layout:)
 
