@@ -1,15 +1,30 @@
 module Todos
-  Item = Struct.new(:id, :text, :done, :services, keyword_init: true) do
-    def self.build(attrs = {})
-      attrs = { id: SecureRandom.uuid, done: false }.merge(attrs)
-      attrs[:services] ||= []
-      new(**attrs)
+  class Item < Types::Data
+    attribute :id, Types::String.default { SecureRandom.uuid }, writer: true
+    attribute :text, String, writer: true
+    attribute :done, Types::Boolean.default(false), writer: true
+    attribute :services, Types::Array[String].default([].freeze), writer: true
+
+    def add_service(service)
+      self.services = services + [service] unless services.include?(service)
     end
   end
 
-  List = Struct.new(:id, :name, :items, keyword_init: true) do
+  class List < Types::Data
+    attribute :id, String, writer: true
+    attribute :name, String, writer: true
+    attribute :items, Types::Array[Item].default([].freeze), writer: true
+
     def find_item(id)
       items.find { |i| i.id == id }
+    end
+
+    def add_item(args = {})
+      self.items = items + [Item.new(args)]
+    end
+
+    def remove_item(id)
+      self.items = items.reject { |i| i.id == id }
     end
   end
 
@@ -49,11 +64,11 @@ module Todos
     end
 
     event :item_added, id: String, text: String do |list, evt|
-      list.items << Item.build(evt.payload.to_h)
+      list.add_item(evt.payload.to_h)
     end
 
     command :toggle_item, id: Types::String.present do |list, cmd|
-      item = list.items.find { |i| i.id == cmd.payload.id }
+      item = list.find_item(cmd.payload.id)
       raise "Item not found with '#{cmd.payload.id}'" unless item
       if item.done
         event :item_undone, id: item.id
@@ -80,7 +95,7 @@ module Todos
 
     event :item_dispatched, id: String, service: String do |list, evt|
       item = list.find_item(evt.payload.id)
-      item.services << evt.payload.service unless item.services.include?(evt.payload.service)
+      item.add_service(evt.payload.service)
     end
 
     command :update_item_text, id: Types::String.present, text: Types::String.present do |list, cmd|
@@ -101,7 +116,7 @@ module Todos
     end
 
     event :item_removed, id: String do |list, evt|
-      list.items.reject! { |i| i.id == evt.payload.id }
+      list.remove_item(evt.payload.id)
     end
   end
 end
