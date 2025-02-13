@@ -8,7 +8,7 @@ module Components
     def view_template
       div id: "todo-list-#{@todo_list.id}", class: 'todo-list' do
         if @interactive
-          Components::Action(
+          Components::Command(
             Todos::ListActor::AddItem,
             stream_id: @todo_list.id,
             attrs: { class: 'todo-form' }

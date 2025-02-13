@@ -1,5 +1,5 @@
 module Components
-  class Action < Phlex::HTML
+  class Command < Phlex::HTML
     def initialize(command_class, stream_id: nil, attrs: {}, payload: {}, on: 'submit')
       @hidden_payload = payload
       args = { payload: }

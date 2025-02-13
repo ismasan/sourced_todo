@@ -20,7 +20,7 @@ module Pages
       end
 
       div id: 'sidebar' do
-        Components::Action(Todos::ListActor::Create) do |form|
+        Components::Command(Todos::ListActor::Create) do |form|
           form.text_field('name', required: true, autocomplete: 'off', class: 'nice-input')
           button(class: 'nice-button', type: 'submit') { 'Create Todo List' }
         end
