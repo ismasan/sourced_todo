@@ -120,7 +120,8 @@ class App < Sinatra::Base
     # notify the UI
     raise cmd.errors.inspect unless cmd.valid?
 
-    actor, events = Sourced::Router.handle_command(cmd)
+    Sourced.config.backend.schedule_commands([cmd])
+    # actor, events = Sourced::Router.handle_command(cmd)
     # Here we can run the command and render the list
     # back to the UI, or we can return a 204
     # and let the SSE stream pick up the event and update the UI
