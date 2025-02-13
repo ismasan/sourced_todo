@@ -109,6 +109,17 @@ class App < Sinatra::Base
     end
   end
 
+  get '/events/:event_id/correlation' do |event_id|
+    events = Sourced.config.backend.read_correlation_batch(event_id)
+    datastar.stream do |sse|
+      sse.merge_fragments Components::Modal.new(
+        title: 'Event correlation',
+        content: Components::EventsTree.new(events:, highlighted: event_id)
+      )
+      sse.merge_signals modal: true
+    end
+  end
+
   post '/commands/?' do
     # Bit hacky, but I want a generic way to validate
     # all commands and send errors back to the UI
@@ -127,17 +138,6 @@ class App < Sinatra::Base
     else
       Console.error cmd.errors
       422
-    end
-  end
-
-  get '/events/:event_id/correlation' do |event_id|
-    events = Sourced.config.backend.read_correlation_batch(event_id)
-    datastar.stream do |sse|
-      sse.merge_fragments Components::Modal.new(
-        title: 'Event correlation',
-        content: Components::EventsTree.new(events:, highlighted: event_id)
-      )
-      sse.merge_signals modal: true
     end
   end
 
