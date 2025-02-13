@@ -17,23 +17,12 @@ module Components
               'text',
               class: 'todo-input',
               placeholder: 'Add a new todo...',
-              required: true
+              autocomplete: 'off'
             )
             button(type: 'submit', class: 'todo-button') { 'Add' }
           end
         elsif @todo_list.active?
           p { a(href: url("/todo-lists/#{@todo_list.id}")) { 'Back to list' } }
-        end
-
-        if @todo_list.items.any?
-          div(class: 'filters') do
-            input(type: 'radio', name: 'filter', id: 'filter-all', checked: 'checked')
-            label(for: 'filter-all') { 'All' }
-            input(type: 'radio', name: 'filter', id: 'filter-open')
-            label(for: 'filter-open') { 'Open' }
-            input(type: 'radio', name: 'filter', id: 'filter-done')
-            label(for: 'filter-done') { 'Done' }
-          end
         end
 
         ul(class: 'todo-list') do
