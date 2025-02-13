@@ -32,6 +32,7 @@ body {
 #main {
   margin-right: 33rem;
   margin-left: 10rem;
+  padding-top: 12px;
 }
 
 #sidebar {
@@ -189,6 +190,7 @@ h1 {
 }
 
 .todo-list-header {
+  min-height: 50px;
   display: flex;
   gap: 1rem;
   align-items: center;
