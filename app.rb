@@ -110,26 +110,24 @@ class App < Sinatra::Base
   end
 
   post '/commands/?' do
+    # Bit hacky, but I want a generic way to validate
+    # all commands and send errors back to the UI
+    # Here I'm relying on the Components::Command component
+    # including Datastar signals for each visible field
+    # If the command is invalid, I send back those signals with error messages
     cmd = command_context.build(params[:command].to_h)
     Console.info cmd.inspect
-    # TODO: if command is invalid
-    # notify the UI
-    raise cmd.errors.inspect unless cmd.valid?
-
-    Sourced.config.backend.schedule_commands([cmd])
-    # actor, events = Sourced::Router.handle_command(cmd)
-    # Here we can run the command and render the list
-    # back to the UI, or we can return a 204
-    # and let the SSE stream pick up the event and update the UI
-    #
-    # datastar.stream do |sse|
-    #   sse.merge_fragments Components::TodoList.new(todo_list: actor.state)
-    #   sse.merge_fragments(Components::EventList.new(
-    #     events: actor.events,
-    #     href_prefix: 'todo-lists'
-    #   ))
-    # end
-    halt 204
+    if cmd.valid?
+      Sourced.config.backend.schedule_commands([cmd])
+      halt 204
+    elsif cmd.errors[:payload]
+      cid = datastar.signals['command']['_cid']
+      error_signals = { cid => cmd.errors[:payload] }
+      datastar.merge_signals(error_signals)
+    else
+      Console.error cmd.errors
+      422
+    end
   end
 
   get '/events/:event_id/correlation' do |event_id|

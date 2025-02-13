@@ -134,7 +134,26 @@ h1 {
   margin-bottom: 2rem;
 }
 
-.todo-input, .nice-input {
+.command-field {
+  flex: 1;
+}
+.command-field.errors {
+  input {
+    border-color: red;
+  }
+  .command-field__errors {
+    color: red;
+    font-size: 0.8rem;
+  }
+}
+.todo-input {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 2px solid #e5e5e5;
+  border-radius: 4px;
+  width: 98%;
+}
+.nice-input {
   flex: 1;
   padding: 0.5rem;
   font-size: 1rem;
@@ -152,6 +171,9 @@ h1 {
   cursor: pointer;
 }
 
+.todo-button {
+  max-height: 38px;
+}
 .nice-form {
   .row {
     display: flex;
