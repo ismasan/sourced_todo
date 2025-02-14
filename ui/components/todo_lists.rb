@@ -1,8 +1,8 @@
 module Components
   class TodoLists < Phlex::HTML
     class ArchiveList < Phlex::HTML
-      def initialize(_list_id)
-        @list_id = list
+      def initialize(list_id)
+        @list_id = list_id
       end
 
       def view_template
@@ -13,8 +13,8 @@ module Components
     end
 
     class DeleteList < Phlex::HTML
-      def initialize(_list_id)
-        @list_id = list
+      def initialize(list_id)
+        @list_id = list_id
       end
 
       def view_template
