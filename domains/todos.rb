@@ -102,6 +102,25 @@ module Todos
       end
     end
 
+    command :update_item_text, id: Types::String.present, text: Types::String.present do |list, cmd|
+      if list.active?
+        item = list.find_item(cmd.payload.id)
+        raise "Item not found with '#{cmd.payload.id}'" unless item
+        previous_item = list.find_item_by_text(cmd.payload.text)
+        if previous_item
+          event :item_duplicated, id: previous_item.id
+        else
+          event :item_text_updated, cmd.payload
+        end
+      end
+    end
+
+    event :item_text_updated, id: String, text: String do |list, evt|
+      item = list.find_item(evt.payload.id)
+      item.text = evt.payload.text
+      list.duplicated_item = nil
+    end
+
     event :item_duplicated, id: String do |list, evt|
       item = list.find_item(evt.payload.id)
       list.duplicated_item = item
@@ -147,19 +166,6 @@ module Todos
     event :item_dispatched, id: String, service: String do |list, evt|
       item = list.find_item(evt.payload.id)
       item.add_service(evt.payload.service)
-    end
-
-    command :update_item_text, id: Types::String.present, text: Types::String.present do |list, cmd|
-      if list.active?
-        item = list.find_item(cmd.payload.id)
-        raise "Item not found with '#{cmd.payload.id}'" unless item
-        event :item_text_updated, cmd.payload
-      end
-    end
-
-    event :item_text_updated, id: String, text: String do |list, evt|
-      item = list.find_item(evt.payload.id)
-      item.text = evt.payload.text
     end
 
     command :remove_item, id: Types::String.present do |list, cmd|

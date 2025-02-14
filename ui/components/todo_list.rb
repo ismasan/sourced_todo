@@ -11,8 +11,7 @@ module Components
             'text',
             class: 'todo-input',
             placeholder: 'Add a new todo...',
-            autocomplete: 'off',
-            value: @todo_list.duplicated_item&.text
+            autocomplete: 'off'
           )
           button(type: 'submit', class: 'todo-button') { 'Add' }
         end
@@ -43,7 +42,7 @@ module Components
               item,
               @todo_list.id,
               duplicated_id: @todo_list.duplicated_item&.id,
-              interactive: @interactive && !@todo_list.paused
+              interactive: @interactive
             )
           end
         end
