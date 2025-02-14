@@ -136,7 +136,7 @@ class App < Sinatra::Base
 
       #[cid]-[name]-errors
       errors = cmd.errors[:payload]
-      datastar.stream do |sse|
+      datastar.send(:stream_no_heartbeat) do |sse|
         errors.each do |field, error|
           # 'text', "can't be blank"
           field_id = [cid, field].join('-')
