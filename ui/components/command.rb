@@ -10,13 +10,13 @@ module Components
       end
     end
 
-    def initialize(command_class, stream_id: nil, attrs: {}, payload: {}, on: 'submit')
-      @hidden_payload = payload
-      args = { payload: }
+    def initialize(command_class, attrs = {})
+      @on = attrs.delete(:on) || 'submit'
+      stream_id = attrs.delete(:stream_id)
+      args = {}
       args[:stream_id] = stream_id if stream_id
       @command = command_class.new(args)
       @attrs = attrs
-      @on = on
       @cid = Signal.new(['cmd', SecureRandom.hex(3)].join)
     end
 
@@ -33,11 +33,13 @@ module Components
         input(type: 'hidden', name: 'command[type]', value: command.type)
         input(type: 'hidden', name: 'command[_cid]', value: @cid.to_s)
 
-        hidden_payload.to_h.each do |key, value|
-          input(type: 'hidden', name: "command[payload][#{key}]", value:)
-        end
-
         yield
+      end
+    end
+
+    def payload_fields(fields = {})
+      fields.each do |key, value|
+        input(type: 'hidden', name: "command[payload][#{key}]", value:)
       end
     end
 

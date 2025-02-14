@@ -11,7 +11,7 @@ module Components
           Components::Command(
             Todos::ListActor::AddItem,
             stream_id: @todo_list.id,
-            attrs: { class: 'todo-form' }
+            class: 'todo-form'
           ) do |form|
             form.text_field(
               'text',

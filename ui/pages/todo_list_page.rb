@@ -32,7 +32,7 @@ module Pages
             Components::Command(
               Todos::ListActor::UpdateName, 
               stream_id: @todo_list.id,
-              attrs: { data: { show: '$_editing' } }
+              data: { show: '$_editing' }
             ) do |form|
               form.text_field(
                 'name', 
