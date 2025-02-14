@@ -1,5 +1,29 @@
 module Components
   class TodoLists < Phlex::HTML
+    class ArchiveList < Phlex::HTML
+      def initialize(_list_id)
+        @list_id = list
+      end
+
+      def view_template
+        Components::Command(Todos::ListActor::Archive, stream_id: @list_id) do |_form|
+          button(type: 'submit') { 'Archive' }
+        end
+      end
+    end
+
+    class DeleteList < Phlex::HTML
+      def initialize(_list_id)
+        @list_id = list
+      end
+
+      def view_template
+        Components::Command(Todos::ListActor::Delete, stream_id: @list_id) do |_form|
+          button(type: 'submit') { 'Delete' }
+        end
+      end
+    end
+
     def initialize(lists: [])
       @lists = lists
     end
@@ -26,13 +50,9 @@ module Components
             td { Components::StatusBadge(list[:status]) }
             td do
               if list[:status] == 'active'
-                Components::Command(Todos::ListActor::Archive, stream_id: list[:id]) do |_form|
-                  button(type: 'submit') { 'Archive' }
-                end
+                render ArchiveList.new(list[:id])
               elsif list[:status] == 'archived'
-                Components::Command(Todos::ListActor::Delete, stream_id: list[:id]) do |_form|
-                  button(type: 'submit') { 'Delete' }
-                end
+                render DeleteList.new(list[:id])
               end
             end
           end

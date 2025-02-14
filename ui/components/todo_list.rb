@@ -1,5 +1,24 @@
 module Components
   class TodoList < Phlex::HTML
+    class AddItem < Phlex::HTML
+      def initialize(todo_list)
+        @todo_list = todo_list
+      end
+
+      def view_template
+        Components::Command(Todos::ListActor::AddItem, stream_id: @todo_list.id, class: 'todo-form') do |form|
+          form.text_field(
+            'text',
+            class: 'todo-input',
+            placeholder: 'Add a new todo...',
+            autocomplete: 'off',
+            value: @todo_list.duplicated_item&.text
+          )
+          button(type: 'submit', class: 'todo-button') { 'Add' }
+        end
+      end
+    end
+
     def initialize(todo_list:, interactive: true)
       @todo_list = todo_list
       @interactive = interactive
@@ -8,20 +27,7 @@ module Components
     def view_template
       div id: "todo-list-#{@todo_list.id}", class: ['todo-list', ('paused' if @todo_list.paused)] do
         if @interactive
-          Components::Command(
-            Todos::ListActor::AddItem,
-            stream_id: @todo_list.id,
-            class: 'todo-form'
-          ) do |form|
-            form.text_field(
-              'text',
-              class: 'todo-input',
-              placeholder: 'Add a new todo...',
-              autocomplete: 'off',
-              value: @todo_list.duplicated_item&.text
-            )
-            button(type: 'submit', class: 'todo-button') { 'Add' }
-          end
+          render AddItem.new(@todo_list)
           if @todo_list.duplicated_item
             p(class: 'paused-message') do
               plain 'An item with the same text already exists. Please correct the name.'

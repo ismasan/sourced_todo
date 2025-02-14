@@ -133,8 +133,18 @@ class App < Sinatra::Base
       halt 204
     elsif cmd.errors[:payload] # <== Send back error signals to UI
       cid = datastar.signals['command']['_cid']
-      error_signals = { cid => cmd.errors[:payload] }
-      datastar.merge_signals(error_signals)
+
+      #[cid]-[name]-errors
+      errors = cmd.errors[:payload]
+      datastar.stream do |sse|
+        errors.each do |field, error|
+          # 'text', "can't be blank"
+          field_id = [cid, field].join('-')
+          sse.merge_fragments Components::Command::ErrorMessages.new(field_id, error)
+          wrapper_id = [field_id, 'wrapper'].join('-')
+          sse.execute_script %(document.getElementById("#{wrapper_id}").classList.add('errors'))
+        end
+      end
     else # <== This should never happen
       Console.error cmd.errors
       422

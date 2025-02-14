@@ -8,15 +8,12 @@ module Components
     end
 
     def view_template
-      edit = "_edit#{todo.id[0..7]}"
-
       li(
         class: [
           'todo-item',
           ('todo-item__done' if todo.done),
           ('todo-item__duplicated' if todo.id == @duplicated_id)
         ],
-        data: { "signals-#{edit}" => 'false' },
         id: dom_id
       ) do
         Components::Command(Todos::ListActor[:toggle_item], stream_id: @list_id, on: :change) do |form|
@@ -24,34 +21,41 @@ module Components
           form.check_box('done', value: todo.done, checked: todo.done, disabled: !@interactive, class: 'todo-checkbox')
         end
 
-        edit_field_id = dom_id('edit')
+        div(class: 'todo-text-action') do
+          Components::InlineEdit(enabled: @interactive) do |edit|
+            edit.trigger do
+              div(class: 'todo-text') do
+                plain todo.text
+              end
+            end
 
-        div(class: 'todo-text-action', data: { show: "$#{edit}" }) do
-          Components::Command(Todos::ListActor[:update_item_text], stream_id: @list_id) do |form|
+            edit.target do
+              Components::Command(
+                Todos::ListActor[:update_item_text],
+                stream_id: @list_id,
+                class: 'hidden'
+              ) do |form|
+                form.payload_fields id: todo.id
+                form.text_field('text', value: todo.text, disabled: !@interactive)
+              end
+            end
+          end
+        end
+
+        if todo.services.any?
+          div(class: 'todo-services') do
+            todo.services.each do |service|
+              img(height: 24, src: "/images/services/#{service.downcase}.webp", class: 'todo-service')
+            end
+          end
+        end
+
+        if @interactive
+          Components::Command(Todos::ListActor[:remove_item], stream_id: @list_id, class: 'todo-delete') do |form|
             form.payload_fields id: todo.id
-            form.text_field('text', value: todo.text, id: edit_field_id, disabled: !@interactive)
+            button { '✖' }
           end
         end
-        click = [%($#{edit} = true)]
-        click << %(document.getElementById("#{edit_field_id}").focus())
-        click = click.join(';')
-        outside = %($#{edit} = false)
-        data = @interactive ? { show: "!$#{edit}", 'on-click' => click, 'on-click__outside' => outside } : {}
-
-        div(class: 'todo-text', data:) do
-          plain todo.text
-        end
-
-        div(class: 'todo-services') do
-          todo.services.each do |service|
-            img(height: 24, src: "/images/services/#{service.downcase}.webp", class: 'todo-service')
-          end
-        end if todo.services.any?
-
-        Components::Command(Todos::ListActor[:remove_item], stream_id: @list_id, class: 'todo-delete') do |form|
-          form.payload_fields id: todo.id
-          button { '✖' }
-        end if @interactive
       end
     end
 
@@ -60,7 +64,7 @@ module Components
     attr_reader :todo
 
     def dom_id(suffix = nil)
-      ['todo', todo.id, suffix].compact.join('_')
+      ['todo', todo.id[0..5], suffix].compact.join('_')
     end
   end
 end

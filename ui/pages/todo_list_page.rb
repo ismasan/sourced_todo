@@ -10,6 +10,25 @@ module Pages
     #   )
     # end
 
+    class UpdateName < Phlex::HTML
+      def initialize(todo_list)
+        @todo_list = todo_list
+      end
+
+      def view_template
+        Components::Command(
+          Todos::ListActor::UpdateName, 
+          stream_id: @todo_list.id,
+        ) do |form|
+          form.text_field(
+            'name', 
+            class: 'nice-input', 
+            value: @todo_list.name,
+          )
+        end
+      end
+    end
+
     def initialize(todo_list:, events: [], seq: nil, layout: false, interactive: true)
       super(layout:)
 
@@ -27,18 +46,12 @@ module Pages
     def container
       div id: 'main' do
         div class: 'todo-list-header' do
-          div class: 'editable-name', data: { signals: '{"_editing": false}', 'on-click__outside' => '$_editing = false' } do
-            h1(data: { 'on-click' => '$_editing = true', show: '!$_editing' }) { @todo_list.name }
-            Components::Command(
-              Todos::ListActor::UpdateName, 
-              stream_id: @todo_list.id,
-              data: { show: '$_editing' }
-            ) do |form|
-              form.text_field(
-                'name', 
-                class: 'nice-input', 
-                value: @todo_list.name,
-              )
+          Components::InlineEdit(enabled: @interactive) do |edit|
+            edit.trigger do
+              h1(data: { 'edit-trigger' => true }) { @todo_list.name }
+            end
+            edit.target do
+              render UpdateName.new(@todo_list)
             end
           end
           Components::StatusBadge(@todo_list.status)

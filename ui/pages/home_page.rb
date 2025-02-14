@@ -13,6 +13,15 @@ module Pages
     #   ui.merge_fragments Pages::HomePage.new(lists:)
     # end
 
+    class CreateList < Phlex::HTML
+      def view_template
+        Components::Command(Todos::ListActor::Create, class: 'nice-form') do |form|
+          form.text_field('name', required: true, autocomplete: 'off', class: 'nice-input')
+          button(class: 'nice-button', type: 'submit') { 'Create Todo List' }
+        end
+      end
+    end
+
     def initialize(lists: [], layout: false)
       super(layout:)
       @active, @archived = lists.partition { |list| list[:status] == 'active' }
@@ -37,10 +46,7 @@ module Pages
       end
 
       div id: 'sidebar' do
-        Components::Command(Todos::ListActor::Create) do |form|
-          form.text_field('name', required: true, autocomplete: 'off', class: 'nice-input')
-          button(class: 'nice-button', type: 'submit') { 'Create Todo List' }
-        end
+        render CreateList.new
       end
     end
   end

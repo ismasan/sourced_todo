@@ -1,12 +1,21 @@
 module Components
   class Command < Phlex::HTML
-    Signal = Data.define(:name) do
-      def ref = "$#{name}"
+    LocalID = Data.define(:name) do
       def to_s = name
-      def quoted = "'#{name}'"
 
-      def signal(n)
-        self.class.new("#{name}.#{n}")
+      def sub(n)
+        self.class.new("#{name}-#{n}")
+      end
+    end
+
+    class ErrorMessages < Phlex::HTML
+      def initialize(field_id, errors = [])
+        @id = [field_id, 'errors'].join('-')
+        @errors = Array(errors).join(', ')
+      end
+
+      def view_template
+        span(id: @id, class: 'command-field__errors') { @errors }
       end
     end
 
@@ -17,13 +26,12 @@ module Components
       args[:stream_id] = stream_id if stream_id
       @command = command_class.new(args)
       @attrs = attrs
-      @cid = Signal.new(['cmd', SecureRandom.hex(3)].join)
+      @cid = LocalID.new(['cmd', SecureRandom.hex(3)].join)
     end
 
     def view_template
       data = @attrs.fetch(:data, {}).merge(
         "on-#{@on}" => "@post('#{url('/commands')}', {contentType: 'form'})", 
-        'signals-cid' => @cid.quoted,
         'indicator-fetching' => true
       )
       attrs = @attrs.merge(data:)
@@ -44,23 +52,28 @@ module Components
     end
 
     def text_field(name, args = {})
-      with_errors(name) do
-        input **args.merge(type: 'text', name: "command[payload][#{name}]")
+      with_errors(name) do |id|
+        input **args.merge(id:, type: 'text', name: "command[payload][#{name}]")
       end
     end
 
     def check_box(name, args = {})
-      input **args.merge(type: 'checkbox', name: "command[payload][#{name}]")
+      with_errors(name) do |id|
+        input **args.merge(id: ,type: 'checkbox', name: "command[payload][#{name}]")
+      end
     end
 
     private
 
     def with_errors(name, &)
-      signal = @cid.signal(name)
+      #[cid]-[name]
+      field_id = @cid.sub(name)
 
-      div(class: 'command-field', data: { "signals-#{signal}" => 'false', 'class-errors' => signal.ref }) do
-        yield
-        span(class: 'command-field__errors', data: { show: signal.ref, text: signal.ref }) { '...' }
+      # [cid]-[name]-wrapper
+      div id: field_id.sub('wrapper').to_s, class: 'command-field' do
+        yield field_id.to_s
+        #[cid]-[name]-errors
+        render ErrorMessages.new(field_id)
       end
     end
 
