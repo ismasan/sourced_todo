@@ -124,14 +124,15 @@ class App < Sinatra::Base
     # Bit hacky, but I want a generic way to validate
     # all commands and send errors back to the UI
     # Here I'm relying on the Components::Command component
-    # including Datastar signals for each visible field
-    # If the command is invalid, I send back those signals with error messages
+    # rendering input fields by a specific convention
+    # and sending a [command][_cid] generated ID
+    # If invalid, I send back error message elements targeting those specific IDs on the page
     cmd = command_context.build(params[:command].to_h)
     Console.info cmd.inspect
     if cmd.valid? # <== schedule valid command for processing
       Sourced.config.backend.schedule_commands([cmd])
       halt 204
-    elsif cmd.errors[:payload] # <== Send back error signals to UI
+    elsif cmd.errors[:payload] # <== Send back error fragments to UI
       cid = datastar.signals['command']['_cid']
 
       #[cid]-[name]-errors
