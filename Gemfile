@@ -10,12 +10,12 @@ gem 'phlex', '2.0.0.rc1'
 gem 'phlex-sinatra'
 gem 'puma'
 
-gem 'datastar' # , path: '/Users/ismasan/code/personal/gems/datastar/sdk/ruby'
+gem 'datastar'
 gem 'dotenv'
 gem 'pg'
-gem 'plumb', github: 'ismasan/plumb'
+gem 'plumb'
 gem 'sequel'
-gem 'sourced', path: '/Users/ismasan/code/personal/gems/sourced'
+gem 'sourced', github: 'ismasan/sourced', branch: 'pubsub'
 gem 'zeitwerk', '~> 2.7'
 
 group :development do

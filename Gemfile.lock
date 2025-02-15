@@ -1,13 +1,7 @@
 GIT
-  remote: https://github.com/ismasan/plumb.git
-  revision: 0856fefd96745075dd0d2c95d9e5b27cbba7fedd
-  specs:
-    plumb (0.0.10)
-      bigdecimal
-      concurrent-ruby
-
-PATH
-  remote: /Users/ismasan/code/personal/gems/sourced
+  remote: https://github.com/ismasan/sourced.git
+  revision: 07748dae418b0896357be774ec6ce6830e3ec3c3
+  branch: pubsub
   specs:
     sourced (0.0.1)
       async
@@ -16,10 +10,10 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    async (2.22.0)
+    async (2.23.0)
       console (~> 1.29)
       fiber-annotation
-      io-event (~> 1.7)
+      io-event (~> 1.9)
       metrics (~> 0.12)
       traces (~> 0.15)
     base64 (0.2.0)
@@ -36,8 +30,8 @@ GEM
     fiber-local (1.1.0)
       fiber-storage
     fiber-storage (1.0.0)
-    io-event (1.8.4)
-    json (2.9.1)
+    io-event (1.9.0)
+    json (2.10.1)
     logger (1.6.5)
     metrics (0.12.1)
     mustermann (3.0.3)
@@ -48,6 +42,9 @@ GEM
     phlex-sinatra (0.4.0)
       phlex (>= 1.7.0)
       sinatra
+    plumb (0.0.10)
+      bigdecimal
+      concurrent-ruby
     puma (6.6.0)
       nio4r (~> 2.0)
     rack (3.1.10)
@@ -83,7 +80,7 @@ DEPENDENCIES
   pg
   phlex (= 2.0.0.rc1)
   phlex-sinatra
-  plumb!
+  plumb
   puma
   rack-unreloader (~> 2.1)
   sequel
