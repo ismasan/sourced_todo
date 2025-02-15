@@ -56,3 +56,4 @@ Loads!
 * Fix various Sourced issues around connection pools, concurrent actors.
 * Improve Sourced APIs for launching new actors with different stream IDs.
 * A decent error handling story!
+* Generated docs and diagrams. Based on command and event schemas, and inserted into this README with a Git hook.
