@@ -198,5 +198,24 @@ module Todos
 
     event :deleted do |list, evt|
     end
+
+    command(
+      :reorder_items,
+      from: Types::Lax::Integer.present, 
+      to: Types::Lax::Integer.present
+      ) do |list, cmd|
+      if list.items[cmd.payload.from] && list.items[cmd.payload.to]
+        event :items_reordered, cmd.payload
+      end
+    end
+
+    event :items_reordered, from: Integer, to: Integer do |list, evt|
+      from = evt.payload.from
+      to = evt.payload.to
+      # Given from and to indices, I want to reorder list.items
+      list.items = list.items.dup.tap do |items|
+        items.insert(to, items.delete_at(from))
+      end
+    end
   end
 end

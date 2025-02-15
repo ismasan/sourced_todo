@@ -120,6 +120,22 @@ class App < Sinatra::Base
     end
   end
 
+  post '/commands/:list_id/reorder-items' do |list_id|
+    cmd = command_context.build(
+      Todos::ListActor::ReorderItems,
+      stream_id: list_id,
+      payload: {
+        from: datastar.signals['from'],
+        to: datastar.signals['to']
+      }
+    )
+
+    raise 'Invalid command' unless cmd.valid?
+    Console.info cmd.valid?
+    Sourced.config.backend.schedule_commands([cmd])
+    204
+  end
+
   post '/commands/?' do
     # Bit hacky, but I want a generic way to validate
     # all commands and send errors back to the UI

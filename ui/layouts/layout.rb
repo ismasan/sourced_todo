@@ -28,6 +28,23 @@ module Layouts
           # onload needs to be at the end
           # to make sure to collect all signals on the page
           div(data: onload)
+          script(type: 'module', src: 'https://cdn.jsdelivr.net/npm/sortablejs@1.15.3')
+          script do
+            raw safe <<~JAVASCRIPT
+              document.addEventListener('DOMContentLoaded', function() {
+                document.querySelectorAll('[data-sortable]').forEach(function(sortContainer) {
+                  new Sortable(sortContainer, {
+                      animation: 150,
+                      ghostClass: 'opacity-25',
+                      onEnd: (evt) => {
+                      const cevent = new CustomEvent('reordered', {detail: {from: evt.oldIndex, to: evt.newIndex}})
+                        sortContainer.dispatchEvent(cevent);
+                      }
+                  })
+                })
+              })
+            JAVASCRIPT
+          end
         end
       end
     end

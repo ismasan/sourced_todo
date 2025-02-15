@@ -36,7 +36,12 @@ module Components
           p { a(href: url("/todo-lists/#{@todo_list.id}")) { 'Back to list' } }
         end
 
-        ul(class: 'todo-list') do
+        ul(class: 'todo-list',
+           data: {
+             sortable: true,
+             signals: %({from: null,to: null}),
+             'on-reordered' => %($from = event.detail.from; $to = event.detail.to; @post('/commands/#{@todo_list.id}/reorder-items'))
+           }) do
           @todo_list.items.each do |item|
             Components::TodoItem(
               item,
