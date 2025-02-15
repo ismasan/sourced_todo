@@ -45,6 +45,8 @@ If you have Docker running, you can use Docker Compose to install and run both t
 docker-compose up --build
 ```
 
+The app should be running at `http://localhost:9292`.
+
 ### TODO
 
 Loads!
