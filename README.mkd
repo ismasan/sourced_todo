@@ -1,6 +1,6 @@
 ## Event Sourcing Ruby demo 
 
-This is a Ruby + Sinatra + Postgres demo of Event Sourcing using my [Sourced](https://github.com/ismasan/sourced) library.
+This is a Ruby + Sinatra + Postgres demo of Event Sourcing / CQRS using my [Sourced](https://github.com/ismasan/sourced) library.
 
 ### Disclaimer
 Every aspect of this repo is **work in progress** and very much experimental.
