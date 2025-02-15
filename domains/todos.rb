@@ -93,10 +93,7 @@ module Todos
 
     command :add_item, text: Types::String.present do |list, cmd|
       if list.active?
-        previous_item = list.find_item_by_text(cmd.payload.text)
-        if previous_item
-          event :item_duplicated, id: previous_item.id
-        else
+        validate_duplicated_item(list, cmd.payload.text) do
           event :item_added, id: SecureRandom.uuid, text: cmd.payload.text
         end
       end
@@ -106,11 +103,10 @@ module Todos
       if list.active?
         item = list.find_item(cmd.payload.id)
         raise "Item not found with '#{cmd.payload.id}'" unless item
-        previous_item = list.find_item_by_text(cmd.payload.text)
-        if previous_item
-          event :item_duplicated, id: previous_item.id
-        else
-          event :item_text_updated, cmd.payload
+        if item.text != cmd.payload.text
+          validate_duplicated_item(list, cmd.payload.text) do
+            event :item_text_updated, cmd.payload
+          end
         end
       end
     end
@@ -119,6 +115,7 @@ module Todos
       item = list.find_item(evt.payload.id)
       item.text = evt.payload.text
       list.duplicated_item = nil
+      list.paused = false
     end
 
     event :item_duplicated, id: String do |list, evt|
@@ -217,5 +214,17 @@ module Todos
         items.insert(to, items.delete_at(from))
       end
     end
+
+    private
+
+    def validate_duplicated_item(list, text, &)
+      previous_item = list.find_item_by_text(text)
+      if previous_item
+        event :item_duplicated, id: previous_item.id
+      else
+        yield
+      end
+    end
+
   end
 end
