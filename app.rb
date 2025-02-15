@@ -216,6 +216,27 @@ class App < Sinatra::Base
       end
     end
   end
+
+  ## SYSTEM dashboard
+  get '/sourced' do
+    stats = Sourced.config.backend.stats
+
+    if datastar.sse?
+      datastar.stream do |sse|
+        while true
+          sleep 0.1
+          new_stats = Sourced.config.backend.stats
+          # Only stream updates to the UI if stats changed
+          next unless stats != new_stats
+
+          stats = new_stats
+          sse.merge_fragments Pages::SourcedPage::Consumers.new(stats:)
+        end
+      end
+    else
+      phlex Pages::SourcedPage.new(stats:)
+    end
+  end
 end
 
 trap('INT') do

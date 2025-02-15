@@ -1,7 +1,8 @@
 module Layouts
   class Layout < Layouts::Base
-    def initialize(title:)
+    def initialize(title:, sse: '/updates')
       super(title: title)
+      @sse = sse
     end
 
     def view_template
@@ -17,14 +18,19 @@ module Layouts
 
         body(data: { 'signals' => '{"fetching": false, "modal": false}' }) do
           div class: 'nav' do
-            a(href: '/') { 'Dashboard' }
-            span { "logged in as #{helpers.current_user.username}" }
-            a(href: '/logout') { 'Logout' }
+            div class: 'link-group' do
+              a(href: '/') { 'Todo lists' }
+              a(href: '/sourced') { 'System' }
+            end
+            div class: 'link-group' do
+              span { "logged in as #{helpers.current_user.username}" }
+              a(class: 'logout', href: '/logout') { 'Logout' }
+            end
           end
 
           yield
           div(id: 'modal', data: { show: '$modal' })
-          onload = { 'on-load' => %(@get('#{url('/updates')}')) }
+          onload = { 'on-load' => %(@get('#{url(@sse)}')) }
           # onload needs to be at the end
           # to make sure to collect all signals on the page
           div(data: onload)
