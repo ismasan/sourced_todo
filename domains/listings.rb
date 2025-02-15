@@ -1,8 +1,12 @@
   # A projector
-  # "reacts" to events registered with .evolve
+  # Listens to TODO list events
+  # and maintains a list of TODO lists as JSON files on disk at ./storage/todo_lists
 class Listings < Sourced::Projector::EventSourced
   DATA_DIR = './storage/todo_lists'
 
+  # This needs work
+  # We define an "ephemeral" event to signal the system that the listings have been updated
+  # So that the UI can react to it
   module System
     Updated = ::Sourced::Event.define('todos.listings.system.updated')
   end
@@ -61,6 +65,9 @@ class Listings < Sourced::Projector::EventSourced
 
   # Emit an ephemeral event every time this projection is updates
   # so that the UI can react to it
+  # For now we're publishing on a channel shared by all clients
+  # It could also be scoped by the current session, or tenant, or user, or todo-list
+  # based on event metadata. ex. events.last.metadata[:tenant_id]
   sync do |list, _command, events|
     Sourced.config.backend.pubsub.publish('system', events.last.follow(System::Updated))
   end
