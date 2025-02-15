@@ -9,7 +9,11 @@ I'm focusing on exploring DX and UI patterns. There's a long list that might not
 
 ### The app
 
-<blockquote class="bluesky-embed" data-bluesky-uri="at://did:plc:af5ndzzxe7p5vbpmotcxmt6n/app.bsky.feed.post/3lhr63hpjyk2o" data-bluesky-cid="bafyreifmyqyox7ywu7nbm4k6m4hrd4a5hocv5ivyi7wuvlu7ykgeltx7s4"><p lang="en">Some more tweaks to the demo today. Easier time-traveling, and event correlation view. #ruby #eventsourcing<br><br><a href="https://bsky.app/profile/did:plc:af5ndzzxe7p5vbpmotcxmt6n/post/3lhr63hpjyk2o?ref_src=embed">[image or embed]</a></p>&mdash; Ismael Celis (<a href="https://bsky.app/profile/did:plc:af5ndzzxe7p5vbpmotcxmt6n?ref_src=embed">@ismaelcelis.com</a>) <a href="https://bsky.app/profile/did:plc:af5ndzzxe7p5vbpmotcxmt6n/post/3lhr63hpjyk2o?ref_src=embed">February 9, 2025 at 5:35 PM</a></blockquote><script async src="https://embed.bsky.app/static/embed.js" charset="utf-8"></script>
+
+
+https://github.com/user-attachments/assets/dac1bb37-c12d-4e9a-a883-f28a55e5a48a
+
+
 
 This is simple TODO List app. It showcases Event Sourcing and CQRS, where: 
 
