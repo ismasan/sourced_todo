@@ -47,6 +47,16 @@ docker-compose up --build
 
 The app should be running at `http://localhost:9292`.
 
+### Slack updates
+
+This demo includes a feature to publish "done" TODO items to a Slack channel.
+For it to work:
+
+* add `SLACK_WEBHOOK_URL` to your .env or environment. See `env.example`
+
+https://github.com/user-attachments/assets/7fdc1ac8-19d0-4526-9f97-c1c513562b03
+
+
 ### TODO
 
 Loads!
