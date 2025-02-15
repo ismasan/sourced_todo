@@ -30,6 +30,7 @@ GEM
     fiber-local (1.1.0)
       fiber-storage
     fiber-storage (1.0.0)
+    foreman (0.88.1)
     io-event (1.9.0)
     json (2.10.1)
     logger (1.6.5)
@@ -77,6 +78,7 @@ PLATFORMS
 DEPENDENCIES
   datastar
   dotenv
+  foreman
   pg
   phlex (= 2.0.0.rc1)
   phlex-sinatra

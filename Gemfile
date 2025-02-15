@@ -19,5 +19,6 @@ gem 'sourced', github: 'ismasan/sourced', branch: 'pubsub'
 gem 'zeitwerk', '~> 2.7'
 
 group :development do
+  gem 'foreman'
   gem 'rack-unreloader', '~> 2.1'
 end
