@@ -24,9 +24,13 @@ module Phlex
   end
 end
 
+DATABASE_URL = ENV.fetch('DOCKER_DATABASE_URL') {ENV.fetch('DATABASE_URL')}
+
+puts "DATABASE_URL #{DATABASE_URL}"
+
 # Configure Sourced
 Sourced.configure do |config|
-  config.backend = Sequel.connect(ENV.fetch('DATABASE_URL'))
+  config.backend = Sequel.connect(DATABASE_URL)
 end
 
 Sourced.config.backend.install # unless Sourced.config.backend.installed?
@@ -35,10 +39,5 @@ Sourced.config.backend.install # unless Sourced.config.backend.installed?
 Sourced.register(Todos::ListActor)
 Sourced.register(Webhooks::SlackDispatcher) if ENV['SLACK_WEBHOOK_URL']
 Sourced.register(Listings)
-# Sourced.register(Carts::Webhooks)
-# Sourced.register(Inventory::Processor)
-# Sourced.register(Leads::Lead)
-# Sourced.register(Leads::Listings)
-# Sourced.register(Leads::Webhooks::Dispatcher)
 
 Zeitwerk::Loader.eager_load_all if ENV['RACK_ENV'] == 'production'

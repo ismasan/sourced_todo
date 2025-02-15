@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "9292:9292"
+    depends_on:
+      - db
+    environment:
+      DOCKER_DATABASE_URL: postgres://postgres:password@db:5432/sourced_todo
+    volumes:
+      - .:/app
+
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: sourced_todo
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+volumes:
+  db-data:
