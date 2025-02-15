@@ -1,0 +1,41 @@
+## Event Sourcing Ruby demo 
+
+This is a Ruby + Sinatra + Postgres demo of Event Sourcing using my [Sourced](https://github.com/ismasan/sourced) library.
+
+### Disclaimer
+Every aspect of this repo is **work in progress** and very much experimental.
+
+I'm focusing on exploring DX and UI patterns. There's a long list that might not work property yet, especially around DB connection pools.
+
+### The app
+
+This is simple TODO List app. It showcases Event Sourcing and CQRS, where: 
+
+* Every capability is modeled as a _command ==> event_ flow.
+* It features "time traveling" of TODO list state, where you can see what a list looked like at any point in time.
+* It's eventually consistent by default. All actors run in the background, the UI updates accordingly.
+* It uses Postgres as the event store and event bus.
+* Every aspect of the UI is server-driven and reactive. Try opening the app in multiple tabs and see how they stay in sync.
+
+It relies on [Datastar](https://data-star.dev) for stream UI updates.
+
+### Running it
+
+#### A). Manual installation.
+
+If you're Ok with installing Ruby and Postgres locally:
+
+* Install dependencies: `bundle install`
+* Create a database. Example `createdb sourced_todo`
+* Copy `env.example` to `.env` and adjust the DB connection string.
+* Launch the web app: `bundle exec puma`
+* Launch the workers: `bundle exec ruby bin/workers.rb`. This is not optional.
+
+#### B). Docker and Docker Compose
+
+If you have Docker running, you can use Docker Compose to install and run both the app and a Postgres database in isolation.
+
+```sh
+docker-compose up --build
+```
+
