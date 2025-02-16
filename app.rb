@@ -177,9 +177,14 @@ class App < Sinatra::Base
     # TODO: PG LISTEN allows subsribing to multiple channels
     # ie pubsub.subscribe(['system'], ['tenant-1'])
     # This could be beneficial
+    # TODO: the browswer can disconnect (by default Datastar disconnects when the browser tab is not active)
+    # Here we should re-render on reconnect, but NOT on page load.
     channel = Sourced.config.backend.pubsub.subscribe('system')
 
     datastar.on_connect do |*args|
+      # Here we should keep track of whether 
+      # this is an initial page load, or a reconnect.
+      # and re-render if the latter.
       puts 'client connect'
     end
     datastar.on_client_disconnect do |*args|
