@@ -45,7 +45,7 @@ class App < Sinatra::Base
 
   get '/?' do
     if logged_in?
-      phlex Pages::HomePage.new(lists: Listings.all, layout: true)
+      phlex Pages::HomePage.new(lists: Todos::Listings.all, layout: true)
     else
       phlex Pages::LoginPage.new
     end
@@ -206,9 +206,9 @@ class App < Sinatra::Base
               events: todo_list.history,
             )
           end
-        when Listings::System::Updated
+        when Todos::Listings::System::Updated
           if sse.signals['page_key'] == 'Pages::HomePage'
-            sse.merge_fragments Pages::HomePage.new(lists: Listings.all)
+            sse.merge_fragments Pages::HomePage.new(lists: Todos::Listings.all)
           end
         else
           puts "Unknown event: #{evt}"

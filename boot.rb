@@ -38,6 +38,6 @@ Sourced.config.backend.install # unless Sourced.config.backend.installed?
 # Register Sourced deciders and reactors
 Sourced.register(Todos::List)
 Sourced.register(Webhooks::SlackDispatcher) if ENV['SLACK_WEBHOOK_URL']
-Sourced.register(Listings)
+Sourced.register(Todos::Listings)
 
 Zeitwerk::Loader.eager_load_all if ENV['RACK_ENV'] == 'production'
