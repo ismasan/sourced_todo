@@ -72,9 +72,9 @@ module Todos
     end
 
     command :create, name: Types::String.present do |list, cmd|
-      if list.active?
-        event :created, cmd.payload
-      end
+      return unless list.active?
+
+      event :created, cmd.payload
     end
 
     event :created, name: String do |list, evt|
@@ -92,21 +92,23 @@ module Todos
     end
 
     command :add_item, text: Types::String.present do |list, cmd|
-      if list.active?
-        validate_duplicated_item(list, cmd.payload.text) do
-          event :item_added, id: SecureRandom.uuid, text: cmd.payload.text
-        end
+      return unless list.active?
+
+      validate_duplicated_item(list, cmd.payload.text) do
+        event :item_added, id: SecureRandom.uuid, text: cmd.payload.text
       end
     end
 
     command :update_item_text, id: Types::String.present, text: Types::String.present do |list, cmd|
-      if list.active?
-        item = list.find_item(cmd.payload.id)
-        raise "Item not found with '#{cmd.payload.id}'" unless item
-        if item.text != cmd.payload.text
-          validate_duplicated_item(list, cmd.payload.text) do
-            event :item_text_updated, cmd.payload
-          end
+      return unless list.active?
+
+      item = list.find_item(cmd.payload.id)
+      # TODO: raise just brings the workers down and retries on reboot
+      # These should really be domain error events
+      raise "Item not found with '#{cmd.payload.id}'" unless item
+      if item.text != cmd.payload.text
+        validate_duplicated_item(list, cmd.payload.text) do
+          event :item_text_updated, cmd.payload
         end
       end
     end
@@ -131,14 +133,14 @@ module Todos
     end
 
     command :toggle_item, id: Types::String.present do |list, cmd|
-      if list.active?
-        item = list.find_item(cmd.payload.id)
-        raise "Item not found with '#{cmd.payload.id}'" unless item
-        if item.done
-          event :item_undone, id: item.id
-        else
-          event :item_done, id: item.id
-        end
+      return unless list.active?
+
+      item = list.find_item(cmd.payload.id)
+      raise "Item not found with '#{cmd.payload.id}'" unless item
+      if item.done
+        event :item_undone, id: item.id
+      else
+        event :item_done, id: item.id
       end
     end
 
@@ -153,11 +155,11 @@ module Todos
     end
 
     command :notify_dispatched, id: Types::String.present, service: String do |list, cmd|
-      if list.active?
-        item = list.find_item(cmd.payload.id)
-        raise "Item not found with '#{cmd.payload.id}'" unless item
-        event :item_dispatched, cmd.payload
-      end
+      return unless list.active?
+
+      item = list.find_item(cmd.payload.id)
+      raise "Item not found with '#{cmd.payload.id}'" unless item
+      event :item_dispatched, cmd.payload
     end
 
     event :item_dispatched, id: String, service: String do |list, evt|
@@ -166,11 +168,11 @@ module Todos
     end
 
     command :remove_item, id: Types::String.present do |list, cmd|
-      if list.active?
-        item = list.find_item(cmd.payload.id)
-        raise "Item not found with '#{cmd.payload.id}'" unless item
-        event :item_removed, id: item.id
-      end
+      return unless list.active?
+
+      item = list.find_item(cmd.payload.id)
+      raise "Item not found with '#{cmd.payload.id}'" unless item
+      event :item_removed, id: item.id
     end
 
     event :item_removed, id: String do |list, evt|
@@ -178,9 +180,9 @@ module Todos
     end
 
     command :archive do |list, cmd|
-      if list.active?
-        event :archived
-      end
+      return unless list.active?
+
+      event :archived
     end
 
     event :archived do |list, evt|
@@ -188,9 +190,9 @@ module Todos
     end
 
     command :delete do |list, cmd|
-      if list.archived?
-        event :deleted
-      end
+      return unless list.active?
+
+      event :deleted
     end
 
     event :deleted do |list, evt|
@@ -225,6 +227,5 @@ module Todos
         yield
       end
     end
-
   end
 end
