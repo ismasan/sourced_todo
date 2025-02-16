@@ -39,7 +39,7 @@ module Webhooks
       item[:member] = evt.metadata[:username]
     end
 
-    react_with_state Todos::ListActor[:item_done] do |state, evt|
+    reaction_with_state Todos::ListActor[:item_done] do |state, evt|
       item = state[:items][evt.payload.id]
       if item[:dones].size == 2 && (item[:dones].last == item[:dones].first)
         # Do we want to post a different message to Slack?
