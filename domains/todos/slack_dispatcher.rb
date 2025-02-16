@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require 'lib/slack'
 
-module Webhooks
+module Todos
   # This actor reacts to events emitted by Todos::List
   # When a Todo item is marked as `done`, it will post a message to Slack
   # You need to setup yout .env with a SLACK_WEBHOOK_URL
