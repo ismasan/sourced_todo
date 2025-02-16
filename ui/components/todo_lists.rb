@@ -6,7 +6,7 @@ module Components
       end
 
       def view_template
-        Components::Command(Todos::ListActor::Archive, stream_id: @list_id) do |_form|
+        Components::Command(Todos::List::Archive, stream_id: @list_id) do |_form|
           button(type: 'submit') { 'Archive' }
         end
       end
@@ -18,7 +18,7 @@ module Components
       end
 
       def view_template
-        Components::Command(Todos::ListActor::Delete, stream_id: @list_id) do |_form|
+        Components::Command(Todos::List::Delete, stream_id: @list_id) do |_form|
           button(type: 'submit') { 'Delete' }
         end
       end

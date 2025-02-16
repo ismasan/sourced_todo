@@ -2,8 +2,8 @@
 
 module Pages
   class TodoListPage < Pages::Page
-    # react Todos::ListActor::System::Updated do |evt|
-    #   todo_list = Todos::ListActor.load(evt.stream_id)
+    # react Todos::List::System::Updated do |evt|
+    #   todo_list = Todos::List.load(evt.stream_id)
     #   ui.merge_fragments Pages::TodoListPage.new(
     #     todo_list: todo_list.state,
     #     events: todo_list.history,
@@ -17,7 +17,7 @@ module Pages
 
       def view_template
         Components::Command(
-          Todos::ListActor::UpdateName, 
+          Todos::List::UpdateName, 
           stream_id: @todo_list.id,
         ) do |form|
           form.text_field(

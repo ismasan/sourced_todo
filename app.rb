@@ -70,7 +70,7 @@ class App < Sinatra::Base
   end
 
   get '/todo-lists/:id/?' do |id|
-    todo_list = Todos::ListActor.load(id)
+    todo_list = Todos::List.load(id)
     phlex Pages::TodoListPage.new(
       todo_list: todo_list.state, 
       events: todo_list.events,
@@ -83,7 +83,7 @@ class App < Sinatra::Base
   get '/todo-lists/:id/:upto?' do
     interactive = false
     upto = Types::Lax::Integer.parse(params[:upto])
-    todo_list = Todos::ListActor.load(params[:id], upto:)
+    todo_list = Todos::List.load(params[:id], upto:)
     # If this is an SSE request, stream the view back to to the browser
     # If a normal page load, render normally with layout
     if datastar.sse?
@@ -122,7 +122,7 @@ class App < Sinatra::Base
 
   post '/commands/:list_id/reorder-items' do |list_id|
     cmd = command_context.build(
-      Todos::ListActor::ReorderItems,
+      Todos::List::ReorderItems,
       stream_id: list_id,
       payload: {
         from: datastar.signals['from'],
@@ -198,9 +198,9 @@ class App < Sinatra::Base
     datastar.stream do |sse|
       channel.start do |evt, channel|
         case evt
-        when Todos::ListActor::System::Updated
+        when Todos::List::System::Updated
           if sse.signals['page_key'] == 'Pages::TodoListPage' && sse.signals['page_id'] == evt.stream_id
-            todo_list = Todos::ListActor.load(evt.stream_id)
+            todo_list = Todos::List.load(evt.stream_id)
             sse.merge_fragments Pages::TodoListPage.new(
               todo_list: todo_list.state,
               events: todo_list.history,

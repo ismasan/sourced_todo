@@ -72,10 +72,10 @@ class Listings < Sourced::Projector::EventSourced
     Sourced.config.backend.pubsub.publish('system', events.last.follow(System::Updated))
   end
 
-  # Register all events from Todos::ListActor
+  # Register all events from Todos::List
   # So that before_evolve runs before all TODO events
-  evolve_all Todos::ListActor.handled_commands
-  evolve_all Todos::ListActor
+  evolve_all Todos::List.handled_commands
+  evolve_all Todos::List
 
   before_evolve do |list, event|
     list[:seq] = event.seq
@@ -84,36 +84,36 @@ class Listings < Sourced::Projector::EventSourced
     list[:updated_at] = event.created_at
   end
 
-  event Todos::ListActor::Created do |list, event|
+  event Todos::List::Created do |list, event|
     list[:name] = event.payload.name
     list[:created_at_int] = event.created_at.to_i
   end
 
-  event Todos::ListActor::NameUpdated do |list, event|
+  event Todos::List::NameUpdated do |list, event|
     list[:name] = event.payload.name
   end
 
-  event Todos::ListActor::ItemAdded do |list, event|
+  event Todos::List::ItemAdded do |list, event|
     list[:item_count] += 1
   end
 
-  event Todos::ListActor::ItemRemoved do |list, event|
+  event Todos::List::ItemRemoved do |list, event|
     list[:item_count] -= 1
   end
 
-  event Todos::ListActor::ItemDone do |list, event|
+  event Todos::List::ItemDone do |list, event|
     list[:done_count] += 1
   end
 
-  event Todos::ListActor::ItemUndone do |list, event|
+  event Todos::List::ItemUndone do |list, event|
     list[:done_count] -= 1
   end
 
-  event Todos::ListActor::Archived do |list, event|
+  event Todos::List::Archived do |list, event|
     list[:status] = 'archived'
   end
 
-  event Todos::ListActor::Deleted do |list, event|
+  event Todos::List::Deleted do |list, event|
     list[:status] = 'deleted'
   end
 end

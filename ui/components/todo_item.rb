@@ -16,7 +16,7 @@ module Components
         ],
         id: dom_id
       ) do
-        Components::Command(Todos::ListActor[:toggle_item], stream_id: @list_id, on: :change) do |form|
+        Components::Command(Todos::List[:toggle_item], stream_id: @list_id, on: :change) do |form|
           form.payload_fields id: todo.id
           form.check_box('done', value: todo.done, checked: todo.done, disabled: !@interactive, class: 'todo-checkbox')
         end
@@ -31,7 +31,7 @@ module Components
 
             edit.target do
               Components::Command(
-                Todos::ListActor[:update_item_text],
+                Todos::List[:update_item_text],
                 stream_id: @list_id,
                 class: 'hidden'
               ) do |form|
@@ -51,7 +51,7 @@ module Components
         end
 
         if @interactive
-          Components::Command(Todos::ListActor[:remove_item], stream_id: @list_id, class: 'todo-delete') do |form|
+          Components::Command(Todos::List[:remove_item], stream_id: @list_id, class: 'todo-delete') do |form|
             form.payload_fields id: todo.id
             button { '✖' }
           end

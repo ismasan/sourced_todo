@@ -2,7 +2,7 @@
 
 module Todos
   # A state entity for a todo item
-  class Item < Types::Data
+  class ItemState < Types::Data
     attribute :id, Types::AutoUUID, writer: true
     attribute :text, Types::NullableDefaultString, writer: true
     attribute :done, Types::Boolean.default(false), writer: true
@@ -14,12 +14,12 @@ module Todos
   end
 
   # An entity to hold todo list state
-  class List < Types::Data
+  class ListState < Types::Data
     attribute :id, Types::NullableDefaultString, writer: true
     attribute :name, Types::NullableDefaultString, writer: true
     attribute :status, Types::String.options(%w[active archived]).default('active'), writer: true
-    attribute :items, Types::Array[Item].with_blank_default, writer: true
-    attribute :duplicated_item, Item.nullable.default(nil), writer: true
+    attribute :items, Types::Array[ItemState].with_blank_default, writer: true
+    attribute :duplicated_item, ItemState.nullable.default(nil), writer: true
     attribute :paused, Types::Boolean.default(false), writer: true
 
     def active? = status == 'active'
@@ -35,7 +35,7 @@ module Todos
     end
 
     def add_item(args = {})
-      self.items = items + [Item.new(args)]
+      self.items = items + [ItemState.new(args)]
     end
 
     def remove_item(id)
@@ -47,14 +47,14 @@ module Todos
   # This actor handles commands and events for a List entity.
   # This is the gatekeeper to all todo list state changes.
   # See https://github.com/ismasan/sourced?tab=readme-ov-file#actors
-  class ListActor < Sourced::Actor
+  class List < Sourced::Actor
     module System
       Updated = ::Sourced::Event.define('todos.list.system.updated')
     end
 
     # Initial state. Ie a blank Todo list.
     state do |id|
-      List.new(id:)
+      ListState.new(id:)
     end
 
     # All events, not up to

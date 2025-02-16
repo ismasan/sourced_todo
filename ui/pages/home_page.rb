@@ -15,7 +15,7 @@ module Pages
 
     class CreateList < Phlex::HTML
       def view_template
-        Components::Command(Todos::ListActor::Create, class: 'nice-form') do |form|
+        Components::Command(Todos::List::Create, class: 'nice-form') do |form|
           form.text_field('name', required: true, autocomplete: 'off', class: 'nice-input')
           button(class: 'nice-button', type: 'submit') { 'Create Todo List' }
         end
