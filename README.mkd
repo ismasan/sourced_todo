@@ -14,6 +14,11 @@ I'm focusing on exploring DX and UI patterns. There's a long list that might not
 https://github.com/user-attachments/assets/dac1bb37-c12d-4e9a-a883-f28a55e5a48a
 
 
+https://github.com/user-attachments/assets/369caa98-5fc5-43a6-8903-99d3d965feb8
+
+![CleanShot 2025-02-18 at 14 29 59](https://github.com/user-attachments/assets/49e32afd-0b4f-459b-9fac-a2e861282f56)
+
+
 
 This is simple TODO List app. It showcases Event Sourcing and CQRS, where: 
 
