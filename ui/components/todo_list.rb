@@ -24,6 +24,8 @@ module Components
     end
 
     def view_template
+      return deleted_message if @todo_list.deleted?
+
       div id: "todo-list-#{@todo_list.id}", class: ['todo-list', ('paused' if @todo_list.paused)] do
         if @interactive
           render AddItem.new(@todo_list)
@@ -51,6 +53,12 @@ module Components
             )
           end
         end
+      end
+    end
+
+    def deleted_message
+      div id: "todo-list-#{@todo_list.id}", class: %w[todo-list deleted] do
+        h2 { 'This list has been deleted' }
       end
     end
   end

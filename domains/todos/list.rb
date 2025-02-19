@@ -17,13 +17,14 @@ module Todos
   class ListState < Types::Data
     attribute :id, Types::NullableDefaultString, writer: true
     attribute :name, Types::NullableDefaultString, writer: true
-    attribute :status, Types::String.options(%w[active archived]).default('active'), writer: true
+    attribute :status, Types::String.options(%w[active archived deleted]).default('active'), writer: true
     attribute :items, Types::Array[ItemState].with_blank_default, writer: true
     attribute :duplicated_item, ItemState.nullable.default(nil), writer: true
     attribute :paused, Types::Boolean.default(false), writer: true
 
     def active? = status == 'active'
     def archived? = status == 'archived'
+    def deleted? = status == 'deleted'
 
     def find_item(id)
       items.find { |i| i.id == id }
@@ -190,12 +191,13 @@ module Todos
     end
 
     command :delete do |list, cmd|
-      return unless list.active?
+      return unless list.archived?
 
       event :deleted
     end
 
     event :deleted do |list, evt|
+      list.status = 'deleted'
     end
 
     command(
