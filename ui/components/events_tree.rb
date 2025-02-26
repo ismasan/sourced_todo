@@ -31,7 +31,7 @@ module Components
     end
 
     def view_template
-      div(class: 'events-timeline') do
+      div(id: 'events-tree', class: 'events-timeline') do
         button(class: 'toggle-payloads', data: { on: { click: '$showPayloads = !$showPayloads' } }) do
           span(data: { text: '$showPayloads ? "Hide Payloads" : "Show Payloads"' })
         end
