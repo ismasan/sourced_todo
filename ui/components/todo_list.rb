@@ -6,7 +6,12 @@ module Components
       end
 
       def view_template
-        Components::Command(Todos::List::AddItem, stream_id: @todo_list.id, class: 'todo-form') do |form|
+        Components::Command(
+          Todos::List::AddItem, 
+          stream_id: @todo_list.id, 
+          id: 'new-item-form',
+          class: 'todo-form'
+        ) do |form|
           form.text_field(
             'text',
             class: 'todo-input',
