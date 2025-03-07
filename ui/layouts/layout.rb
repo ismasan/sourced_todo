@@ -37,7 +37,7 @@ module Layouts
           script(type: 'module', src: 'https://cdn.jsdelivr.net/npm/sortablejs@1.15.3')
           script do
             raw safe <<~JAVASCRIPT
-              document.addEventListener('DOMContentLoaded', function() {
+              function setupSortable() {
                 document.querySelectorAll('[data-sortable]').forEach(function(sortContainer) {
                   new Sortable(sortContainer, {
                       animation: 150,
@@ -48,7 +48,10 @@ module Layouts
                       }
                   })
                 })
-              })
+              }
+
+              document.addEventListener('DOMContentLoaded', setupSortable)
+              document.addEventListener('OrderedListLoaded', setupSortable)
             JAVASCRIPT
           end
         end

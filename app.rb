@@ -210,6 +210,9 @@ class App < Sinatra::Base
               todo_list: todo_list.state,
               events: todo_list.history,
             )
+            sse.execute_script <<-JS
+              document.dispatchEvent(new CustomEvent('OrderedListLoaded'))
+            JS
           end
         when Todos::Listings::System::Updated
           if sse.signals['page_key'] == 'Pages::HomePage'
