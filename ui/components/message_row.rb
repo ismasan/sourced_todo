@@ -1,5 +1,5 @@
 module Components
-  class MessageRow < Phlex::HTML
+  class MessageRow < Component
     def initialize(event, href: nil, highlighted: false)
       @event = event
       @href = href
@@ -18,7 +18,7 @@ module Components
         div(class: 'event-header') do
           span(class: 'event-sequence') do
             if @href
-              a(data: { 'on-click' => %(@get('#{@href}')) }) { event.seq }
+              a(data: _d.on.click.get(@href).to_h) { event.seq }
             else
               span { event.seq }
             end
@@ -26,7 +26,7 @@ module Components
           producer_for(event)
           span(class: 'event-type') do
             ref = url("/events/#{event.id}/correlation")
-            a(id: SecureRandom.hex(8), data: { 'on-click' => %(@get('#{ref}')) }) { event.type }
+            a(id: SecureRandom.hex(8), data: _d.on.click.get(ref).to_h) { event.type }
           end
           span(class: 'event-timestamp') { event.created_at.to_s }
           span(class: 'event-author') { event.metadata[:username].to_s }

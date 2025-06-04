@@ -1,5 +1,5 @@
 module Components
-  class Command < Phlex::HTML
+  class Command < Component
     LocalID = Data.define(:name) do
       def to_s = name
 
@@ -30,10 +30,10 @@ module Components
     end
 
     def view_template
-      data = @attrs.fetch(:data, {}).merge(
-        "on-#{@on}" => "@post('#{url('/commands')}', {contentType: 'form'})", 
+      local_data = _d.on[@on].post(url('/commands'), content_type: 'form').to_h.merge(
         'indicator-fetching' => true
       )
+      data = @attrs.fetch(:data, {}).merge(local_data)
       attrs = @attrs.merge(data:)
 
       form(**attrs) do

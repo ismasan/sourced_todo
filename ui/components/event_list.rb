@@ -1,5 +1,5 @@
 module Components
-  class EventList < Phlex::HTML
+  class EventList < Component
     def initialize(events:, seq: nil, href_prefix: 'todo-lists', reverse: true)
       @events = events
       @first_seq = @events.first&.seq
@@ -14,24 +14,24 @@ module Components
         div class: 'header' do
           h2 { 'History' }
           if @events.any?
-            div(class: 'history-tools', data: { signals: '{"showPayloads": false}' }) do
+            div(class: 'history-tools', data: _d.signals(showPayloads: false).to_h) do
               disabled_back = @first_seq == @seq
               disabled_forward = @last_seq == @seq
 
               span(class: 'pagination') do
                 button(disabled: disabled_back,
-                       data: { on: { click: %(@get('/#{@href_prefix}/#{@events.first.stream_id}/#{@seq - 1}')) } }) do
+                  data: _d.on.click.get("/#{@href_prefix}/#{@events.first.stream_id}/#{@seq - 1}").to_h) do
                   '←'
                 end
                 button(disabled: disabled_forward,
-                       data: { on: { click: %(@get('/#{@href_prefix}/#{@events.first.stream_id}/#{@seq + 1}')) } }) do
+                  data: _d.on.click.get("/#{@href_prefix}/#{@events.first.stream_id}/#{@seq + 1}").to_h) do
                   '→'
                 end
                 small { "current version: #{@seq} " }
               end
 
               div(class: 'switches') do
-                button(class: 'toggle-payloads', data: { on: { click: '$showPayloads = !$showPayloads' } }) do
+                button(class: 'toggle-payloads', data: _d.on.click.run('$showPayloads = !$showPayloads').to_h) do
                   span(data: { text: '$showPayloads ? "Hide Payloads" : "Show Payloads"' })
                 end
               end

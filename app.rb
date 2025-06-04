@@ -153,7 +153,8 @@ class App < Sinatra::Base
 
       #[cid]-[name]-errors
       errors = cmd.errors[:payload]
-      datastar.send(:stream_no_heartbeat) do |sse|
+      # datastar.send(:stream_no_heartbeat) do |sse|
+      datastar.stream do |sse|
         errors.each do |field, error|
           # 'text', "can't be blank"
           field_id = [cid, field].join('-')
@@ -222,27 +223,6 @@ class App < Sinatra::Base
           puts "Unknown event: #{evt}"
         end
       end
-    end
-  end
-
-  ## SYSTEM dashboard
-  get '/sourced' do
-    stats = Sourced.config.backend.stats
-
-    if datastar.sse?
-      datastar.stream do |sse|
-        while true
-          sleep 0.1
-          new_stats = Sourced.config.backend.stats
-          # Only stream updates to the UI if stats changed
-          next unless stats != new_stats
-
-          stats = new_stats
-          sse.merge_fragments Pages::SourcedPage::Consumers.new(stats:)
-        end
-      end
-    else
-      phlex Pages::SourcedPage.new(stats:)
     end
   end
 end

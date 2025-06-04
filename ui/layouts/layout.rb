@@ -30,10 +30,10 @@ module Layouts
 
           yield
           div(id: 'modal', data: { show: '$modal' })
-          onload = { 'on-load' => %(@get('#{url(@sse)}')) }
+          onload = _d.on.load.get(url(@sse))
           # onload needs to be at the end
           # to make sure to collect all signals on the page
-          div(data: onload)
+          div(data: onload.to_h)
           script(type: 'module', src: 'https://cdn.jsdelivr.net/npm/sortablejs@1.15.3')
           script do
             raw safe <<~JAVASCRIPT

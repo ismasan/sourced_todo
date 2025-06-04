@@ -1,5 +1,7 @@
 module Pages
   class Page < Phlex::HTML
+    include Sourced::UI::Components::DatastarHelpers
+
     def initialize(layout: false)
       @layout = layout
     end

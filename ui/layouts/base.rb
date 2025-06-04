@@ -2,6 +2,8 @@ require 'concurrent'
 
 module Layouts
   class Base < Phlex::HTML
+    include Sourced::UI::Components::DatastarHelpers
+
     HASHED_ASSETS = Concurrent::Map.new
 
     def initialize(title:)
