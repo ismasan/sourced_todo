@@ -26,7 +26,7 @@ module Components
           producer_for(event)
           span(class: 'event-type') do
             ref = url("/events/#{event.id}/correlation")
-            a(data: { 'on-click' => %(@get('#{ref}')) }) { event.type }
+            a(id: SecureRandom.hex(8), data: { 'on-click' => %(@get('#{ref}')) }) { event.type }
           end
           span(class: 'event-timestamp') { event.created_at.to_s }
           span(class: 'event-author') { event.metadata[:username].to_s }
