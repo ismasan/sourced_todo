@@ -6,7 +6,7 @@ module Components
       end
 
       def view_template
-        Components::Command(
+        Sourced::UI::Components::Command(
           Todos::List::AddItem, 
           stream_id: @todo_list.id, 
           id: 'new-item-form',

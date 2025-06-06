@@ -2,6 +2,7 @@
 
 require 'sinatra/base'
 require 'datastar'
+require 'sourced/ui'
 # require_relative 'domains/carts'
 
 class App < Sinatra::Base
@@ -139,33 +140,20 @@ class App < Sinatra::Base
   post '/commands/?' do
     # Bit hacky, but I want a generic way to validate
     # all commands and send errors back to the UI
-    # Here I'm relying on the Components::Command component
+    # Here I'm relying on the Sourced::UI::Components::Command component
     # rendering input fields by a specific convention
     # and sending a [command][_cid] generated ID
     # If invalid, I send back error message elements targeting those specific IDs on the page
-    cmd = command_context.build(params[:command].to_h)
-    Console.info cmd.inspect
-    if cmd.valid? # <== schedule valid command for processing
-      Sourced.config.backend.schedule_commands([cmd])
-      halt 204
-    elsif cmd.errors[:payload] # <== Send back error fragments to UI
-      cid = datastar.signals['command']['_cid']
+    req_id = request.env['cf-request-id']
+    cmd = command_context.build(params[:command].to_h.merge(id: req_id))
+    # Console.info cmd.inspect
 
-      #[cid]-[name]-errors
-      errors = cmd.errors[:payload]
-      # datastar.send(:stream_no_heartbeat) do |sse|
-      datastar.stream do |sse|
-        errors.each do |field, error|
-          # 'text', "can't be blank"
-          field_id = [cid, field].join('-')
-          sse.merge_fragments Components::Command::ErrorMessages.new(field_id, error)
-          wrapper_id = [field_id, 'wrapper'].join('-')
-          sse.execute_script %(document.getElementById("#{wrapper_id}").classList.add('errors'))
-        end
-      end
-    else # <== This should never happen
-      Console.error cmd.errors
-      422
+    Console.info "cf-request-id: #{req_id}"
+    # Console.info cmd.inspect
+
+    Sourced::UI.streaming_command_errors(cmd, datastar) do |cmd|
+      Sourced.schedule_commands([cmd])
+      halt 204
     end
   end
 

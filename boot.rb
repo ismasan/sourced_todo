@@ -3,6 +3,7 @@
 require 'zeitwerk'
 require 'phlex-sinatra'
 require 'sourced'
+require 'sourced/ui/components'
 require 'sequel'
 require 'dotenv'
 Dotenv.load '.env'

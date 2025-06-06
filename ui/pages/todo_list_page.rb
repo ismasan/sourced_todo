@@ -16,7 +16,7 @@ module Pages
       end
 
       def view_template
-        Components::Command(
+        Sourced::UI::Components::Command(
           Todos::List::UpdateName, 
           stream_id: @todo_list.id,
         ) do |form|
