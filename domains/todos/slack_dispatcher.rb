@@ -61,7 +61,7 @@ module Todos
         "list: <http://localhost:9292/todo-lists/#{state[:id]}|#{state[:name]}>"
       ])
 
-      command Todos::List::NotifyDispatched, id: evt.payload.id, service: 'Slack'
+      stream_for(evt).command Todos::List::NotifyDispatched, id: evt.payload.id, service: 'Slack'
     end
   end
 end
