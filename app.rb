@@ -133,7 +133,7 @@ class App < Sinatra::Base
 
     raise 'Invalid command' unless cmd.valid?
     Console.info cmd.valid?
-    Sourced.config.backend.schedule_commands([cmd])
+    Sourced.schedule_commands([cmd])
     204
   end
 
