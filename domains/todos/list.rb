@@ -5,8 +5,13 @@ module Todos
   class ItemState < Types::Data
     attribute :id, Types::AutoUUID, writer: true
     attribute :text, Types::NullableDefaultString, writer: true
+    attribute :expanding, Types::Boolean.default(false), writer: true
     attribute :done, Types::Boolean.default(false), writer: true
     attribute :services, Types::Array[String].with_blank_default, writer: true
+
+    def too_long?
+      text.size > 40
+    end
 
     def add_service(service)
       self.services = services + [service] unless services.include?(service)
@@ -74,7 +79,6 @@ module Todos
 
     command :create, name: Types::String.present do |list, cmd|
       return unless list.active?
-
       event :created, cmd.payload
     end
 
@@ -98,6 +102,41 @@ module Todos
       validate_duplicated_item(list, cmd.payload.text) do
         event :item_added, id: SecureRandom.uuid, text: cmd.payload.text
       end
+    end
+
+    command :expand_item, id: Types::String.present do |list, cmd|
+      return unless list.active?
+      return unless list.find_item(cmd.payload.id)
+
+      event :expansion_started, cmd.payload
+    end
+
+    event :expansion_started, id: String do |list, event|
+      item = list.find_item(event.payload.id)
+      item.expanding = true
+    end
+
+    reaction_with_state :expansion_started do |list, event|
+      item = list.find_item(event.payload.id)
+
+      stream_for(Todos::AIExpander).command(
+        :process_item_expansion, 
+        list_id: list.id, 
+        item_id: item.id, 
+        text: item.text
+      )
+    end
+
+    command :replace_item, id: Types::String.present, lines: [Types::String.present] do |list, cmd|
+      return unless list.active?
+
+      cmd.payload.lines.each do |line|
+        validate_duplicated_item(list, line) do
+          event :item_added, id: SecureRandom.uuid, text: line
+        end
+      end
+
+      event :item_removed, id: cmd.payload.id
     end
 
     command :update_item_text, id: Types::String.present, text: Types::String.present do |list, cmd|

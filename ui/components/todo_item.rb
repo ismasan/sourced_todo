@@ -3,7 +3,7 @@ module Components
     def initialize(todo, list_id, interactive: true, duplicated_id: nil)
       @todo = todo
       @list_id = list_id
-      @interactive = interactive
+      @interactive = interactive && !todo.expanding
       @duplicated_id = duplicated_id
     end
 
@@ -40,6 +40,17 @@ module Components
               end
             end
           end
+        end
+
+        if todo.too_long? && @interactive && Sourced.registered?(Todos::AIExpander)
+          Sourced::UI::Components::Command(Todos::List::ExpandItem, stream_id: @list_id) do |form|
+            form.payload_fields id: todo.id
+            button { 'Expand with AI' }
+          end
+        end
+
+        if todo.expanding
+          Components::StatusBadge('expanding', label: 'Expanding...')
         end
 
         if todo.services.any?

@@ -14,6 +14,12 @@ CODE_LOADER = Zeitwerk::Loader.new
 CODE_LOADER.push_dir("#{__dir__}/ui")
 CODE_LOADER.push_dir("#{__dir__}/domains")
 CODE_LOADER.push_dir("#{__dir__}/lib")
+
+CODE_LOADER.inflector.inflect(
+  'openai' => 'OpenAI',
+  'ai_expander' => 'AIExpander',
+)
+
 CODE_LOADER.setup
 
 $LOAD_PATH.unshift File.dirname(__FILE__)
@@ -46,6 +52,7 @@ Sourced.config.backend.install # unless Sourced.config.backend.installed?
 
 # Register Sourced deciders and reactors
 Sourced.register(Todos::List)
+Sourced.register(Todos::AIExpander) if ENV['OPENAI_API_KEY']
 Sourced.register(Todos::SlackDispatcher) if ENV['SLACK_WEBHOOK_URL']
 Sourced.register(Todos::Listings)
 
