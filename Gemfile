@@ -15,9 +15,10 @@ gem 'dotenv'
 gem 'pg'
 gem 'plumb'
 gem 'sequel'
-# gem 'sourced', github: 'ismasan/sourced'
-gem 'sourced', path: '/Users/ismasan/code/personal/gems/sourced'
-gem 'sourced-ui', path: '/Users/ismasan/code/personal/gems/sourced-ui'
+gem 'sourced', github: 'ismasan/sourced'
+# gem 'sourced', path: '/Users/ismasan/code/personal/gems/sourced'
+# gem 'sourced-ui', path: '/Users/ismasan/code/personal/gems/sourced-ui'
+gem 'sourced-ui', github: 'ismasan/sourced-ui'
 gem 'zeitwerk', '~> 2.7'
 
 group :development do

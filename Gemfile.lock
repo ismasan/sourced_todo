@@ -1,5 +1,6 @@
-PATH
-  remote: /Users/ismasan/code/personal/gems/sourced-ui
+GIT
+  remote: https://github.com/ismasan/sourced-ui.git
+  revision: d67213df8e3648fe01af960fd2a6a4b9b205e55f
   specs:
     sourced-ui (0.1.0)
       datastar
@@ -8,8 +9,9 @@ PATH
       rack
       sourced
 
-PATH
-  remote: /Users/ismasan/code/personal/gems/sourced
+GIT
+  remote: https://github.com/ismasan/sourced.git
+  revision: bcfff9d5cbd02dff9ee1a34c00a9a9887ee651e3
   specs:
     sourced (0.0.1)
       async
@@ -39,8 +41,8 @@ GEM
       fiber-storage
     fiber-storage (1.0.1)
     foreman (0.88.1)
-    io-event (1.10.0)
-    json (2.12.0)
+    io-event (1.10.1)
+    json (2.12.2)
     logger (1.6.5)
     metrics (0.12.2)
     mustermann (3.0.3)
