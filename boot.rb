@@ -32,6 +32,14 @@ puts "DATABASE_URL #{DATABASE_URL}"
 # Configure Sourced
 Sourced.configure do |config|
   config.backend = Sequel.connect(DATABASE_URL)
+
+  config.error_strategy do |s|
+    s.retry(times: 1, after: 1)
+
+    s.on_stop do |exception, message|
+      Sourced.config.logger.error(exception.backtrace.join("\n"))
+    end
+  end
 end
 
 Sourced.config.backend.install # unless Sourced.config.backend.installed?
