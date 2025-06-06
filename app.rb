@@ -144,7 +144,7 @@ class App < Sinatra::Base
     # rendering input fields by a specific convention
     # and sending a [command][_cid] generated ID
     # If invalid, I send back error message elements targeting those specific IDs on the page
-    req_id = request.env['cf-request-id']
+    req_id = request.env['cf-request-id'] || SecureRandom.uuid
     cmd = command_context.build(params[:command].to_h.merge(id: req_id))
     # Console.info cmd.inspect
 
